@@ -7,6 +7,14 @@ namespace fruitfly.objects
 {
     public class Post
     {
+        public PostHeader Header
+        public PostHeader Header
+        {
+            get
+            {
+
+            }
+        }
         public DateTime Created
         {
             get;
@@ -17,7 +25,7 @@ namespace fruitfly.objects
         {
             get;
             set;
-        }
+        } = "ddddddddddddddddd";
 
         public DirectoryInfo Directory
         {

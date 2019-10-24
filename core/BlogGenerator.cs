@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using fruitfly.objects;
 
@@ -19,31 +20,35 @@ namespace fruitfly
             Context = context;
         }
 
-        public void GenerateBlog()
+        public Blog GenerateBlog()
         {
             var blog = new BlogScanner().Scan(Global.BLOG_INPUT);
             RenderBlogPosts(blog);
-            RenderIndex();
+            RenderIndex(blog);
+            return blog;
         }
 
-        private void RenderIndex()
+        private void RenderIndex(Blog blog)
         {
-            WriteHtmlContent(
-                new VariableBinder(Context).BindVariables(File.ReadAllText(Path.Combine(Global.TEMPLATES, Context.Config.template, Global.INDEX_HTML)))
+            var htmlContent = new VariableBinder(Context).BindVariables(
+                File.ReadAllText(Path.Combine(Global.TEMPLATES, Context.Config.template, Global.INDEX_HTML))
             );
-        }
-
-        private void WriteHtmlContent(string htmlContent)
-        {
             File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.INDEX_HTML), htmlContent);
         }
 
         private void RenderBlogPosts(Blog blog)
         {
+            var sb = new StringBuilder();
             foreach(var post in blog.Posts)
             {
+                sb.Append(RenderPostAsJumbotron(post));
                 RenderPost(post);
             }
+        }
+
+        private string RenderPostAsJumbotron(Post post)
+        {
+            return $"<div class=\"jumbotron\"><h1 class=\"display-4\">{post.Header.title}</h1><p class=\"lead\">{post.Article}</p><hr class=\"my-4\"><p>It uses utility classes for typography and spacing to space content out within the larger container.</p><a class=\"btn btn-primary btn-lg\" href=\"#\" role=\"button\">Learn more</a></div>";
         }
 
         private string RenderPost(Post post)
@@ -56,24 +61,24 @@ namespace fruitfly
                 }
             );
 
-            // File.WriteAllText(
-            //     GetOutFileNameAndEnsureDir(year, month, contentDir, singleContentFileInfo),
-            //     renderedPost
-            // );
+            File.WriteAllText(
+                GetOutFileNameAndEnsureDir(post),
+                renderedPost
+            );
 
             return renderedPost;
         }
 
-        // private string GetOutFileNameAndEnsureDir(DirectoryInfo year, DirectoryInfo month, ContentDir contentDir, FileInfo singleContentFileInfo)
-        // {
-        //     var dirName = Path.Combine(Global.BLOG_OUTPUT, year.Name, month.Name, contentDir.Name);
-        //     if(!Directory.Exists(dirName))
-        //     {
-        //         Directory.CreateDirectory(dirName);
-        //     }
+        private string GetOutFileNameAndEnsureDir(Post post)
+        {
+            var outDirName = post.Name.Replace(Global.BLOG_INPUT + "\\", Global.BLOG_OUTPUT + "\\");
+            if(!Directory.Exists(outDirName))
+            {
+                Directory.CreateDirectory(outDirName);
+            }
 
-        //     return Path.Combine(dirName, singleContentFileInfo.Name + ".html");
-        // }
+            return Path.Combine(outDirName, post.ArticleFileInfo.Name + ".html");
+        }
 
         IMdConverter MdConverter
         {
@@ -81,12 +86,6 @@ namespace fruitfly
         } = new MarkdigHtmlConverter();
 
 
-// <div class="jumbotron">
-//   <h1 class="display-4">{post:title}</h1>
-//   <p class="lead">{post:body}</p>
-//   <hr class="my-4">
-//   <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-//   <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
-// </div>        
+     
     }
 }
