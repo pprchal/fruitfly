@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace fruitfly.objects
 {
-    public class Blog : HtmlContentObject, IVariableProvider
+    public class Blog : HtmlContentObject
     {
-        public Blog(IVariableProvider parent) : base(parent)
+        public Blog(Context context) : base(context)
         {
         }
 
@@ -13,11 +13,6 @@ namespace fruitfly.objects
             get;
         } = new List<Post>();
 
-        public override string Html => HtmlRenderer.Render(this);
-
-        string IVariableProvider.GetVariableValue(string name)
-        {
-            return "~o~";
-        }
+        public override string Html => Context.Renderer.RenderBlog(this);
     }
 }

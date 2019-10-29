@@ -1,14 +1,14 @@
 namespace fruitfly.objects
 {
-    public abstract class HtmlContentObject 
+    public abstract class HtmlContentObject
     {
         private HtmlContentObject()
         {
         }
 
-        protected HtmlContentObject(IVariableProvider parent)
+        protected HtmlContentObject(Context context)
         {
-            Parent = parent;
+            Context = context;
         }
 
         public abstract string Html
@@ -16,7 +16,7 @@ namespace fruitfly.objects
             get;
         }
 
-        protected IVariableProvider Parent
+        public Context Context
         {
             get;
         }

@@ -4,13 +4,13 @@ using System.Text.RegularExpressions;
 
 namespace fruitfly.objects
 {
-    public class Post : HtmlContentObject, IVariableProvider
+    public class Post : HtmlContentObject
     {
-        public Post(IVariableProvider parent) : base(parent)
+        public Post(Context context) : base(context)
         {
         }
 
-        public FileInfo Info
+        public FileInfo File
         {
             get;
         }
@@ -19,7 +19,7 @@ namespace fruitfly.objects
         {
             get
             {
-                return Info.Name;
+                return File.Name;
             }
         }
 
@@ -27,11 +27,11 @@ namespace fruitfly.objects
         {
             get
             {
-                return Info.CreationTime;
+                return File.CreationTime;
             }
         }
 
-        public override string Html => HtmlRenderer.RenderPost(this);
+        public override string Html => Context.Renderer.RenderPost(this);
 
      
         public DirectoryInfo Directory
@@ -46,12 +46,12 @@ namespace fruitfly.objects
 
         public string Name { get; internal set; }
 
-        public static Post TryParse(Blog parentBlog, string contentDir)
+        public static Post TryParse(Context context, string contentDir)
         {
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
             {
-                return new Post(parentBlog)
+                return new Post(context)
                 {
                     Name = contentDir,
                     Day = Convert.ToInt32(m.Groups[1].Value),
@@ -68,21 +68,25 @@ namespace fruitfly.objects
             return fileInfo.FullName.EndsWith(".md");
         }
 
-        string IVariableProvider.GetVariableValue(string name)
-        {
-            // {post:title}
-            // {post:created}
-            if(name == "post:title")
-            {
-                return Title;
-            }
-            else if(name == "post:created")
-            {
-                return HtmlRenderer.RenderDate(Created);
-            }
 
-            return Parent.GetVariableValue(name); 
-        }
+        // public virtual string GetVariableValue(string name)
+        // {
+        //     // {post:title}
+        //     // {post:created}
+        //     if(name == "post:title")
+        //     {
+        //         return Title;
+        //     }
+        //     else if(name == "post:created")
+        //     {
+        //         create
+        //         // DateFormat f
+        //         // return Created.to
+        //     }
+
+        //     return Parent.GetVariableValue(name);
+        // }
+
 
         private FileInfo _ArticleFileInfo = null;
         public FileInfo ArticleFileInfo

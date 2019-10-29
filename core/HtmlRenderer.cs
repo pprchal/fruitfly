@@ -1,28 +1,44 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace fruitfly.objects
 {
-    internal class HtmlRenderer
+    public class HtmlRenderer
     {
-        internal static string Render(Blog blog)
+        public HtmlRenderer(Context context)
         {
-            throw new NotImplementedException();
+            Context = context;
         }
 
-        internal static string RenderPostAsJumbotron(Post post)
+        internal string RenderBlog(Blog blog)
         {
-            return "x";
-            // return $"<div class=\"jumbotron\"><h1 class=\"display-4\">{post.Title}</h1><p class=\"lead\">{post.HtmlShort}</p><hr class=\"my-4\"><p>It uses utility classes for typography and spacing to space content out within the larger container.</p><a class=\"btn btn-primary btn-lg\" href=\"#\" role=\"button\">Learn more</a></div>";
+            return Context.Binder.BindVariables(
+                Context.Storage.LoadContent(Global.INDEX_HTML)
+            );
         }
 
-        internal static string RenderPost(Post post)
+        public string RenderPostAsJumbotron(Post post)
         {
-            throw new NotImplementedException();
+            return "TODO Jumbo";
         }
 
-        internal static string RenderDate(DateTime created)
+        public string RenderPost(Post post)
         {
-            throw new NotImplementedException();
+            return Context.Binder.BindVariables(
+                Context.Storage.LoadContent(Global.POST_HTML),
+                new Dictionary<string, Func<string>>()
+                {
+                    { Global.VAR_NAME_CONTENT, () => MdConverter.Convert(File.ReadAllText(post.ArticleFileInfo.FullName)) }
+                }
+            );
         }
+
+        IMdConverter MdConverter
+        {
+            get;
+        } = new MarkdigHtmlConverter();
+
+        public Context Context { get; }
     }
 }
