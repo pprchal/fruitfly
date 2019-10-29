@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using fruitfly.objects;
 
 namespace fruitfly
@@ -22,18 +19,13 @@ namespace fruitfly
 
         public Blog GenerateBlog()
         {
-            var blog = new BlogScanner().Scan(Global.BLOG_INPUT);
-            RenderBlogPosts(blog);
-            RenderIndex(blog);
-            return blog;
-        }
-
-        private void RenderIndex(Blog blog)
-        {
-            var htmlContent = new VariableBinder(Context).BindVariables(
-                File.ReadAllText(Path.Combine(Global.TEMPLATES, Context.Config.template, Global.INDEX_HTML))
+            var blog = new BlogScanner(Context).Scan(Global.BLOG_INPUT);
+            Context.Storage.WriteContent(
+                Global.INDEX_HTML, 
+                Context.Renderer.RenderBlog(blog)
             );
-            File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.INDEX_HTML), htmlContent);
+            RenderBlogPosts(blog);
+            return blog;
         }
 
         private void RenderBlogPosts(Blog blog)
@@ -41,32 +33,13 @@ namespace fruitfly
             var sb = new StringBuilder();
             foreach(var post in blog.Posts)
             {
-                sb.Append(RenderPostAsJumbotron(post));
-                RenderPost(post);
+                sb.Append(Context.Renderer.RenderPostRow(post));
+
+                File.WriteAllText(
+                    GetOutFileNameAndEnsureDir(post),
+                    Context.Renderer.RenderPost(post)
+                );
             }
-        }
-
-        private string RenderPostAsJumbotron(Post post)
-        {
-            return $"<div class=\"jumbotron\"><h1 class=\"display-4\">{post.Header.title}</h1><p class=\"lead\">{post.Article}</p><hr class=\"my-4\"><p>It uses utility classes for typography and spacing to space content out within the larger container.</p><a class=\"btn btn-primary btn-lg\" href=\"#\" role=\"button\">Learn more</a></div>";
-        }
-
-        private string RenderPost(Post post)
-        {
-            var renderedPost = new VariableBinder(Context).BindVariables(
-                File.ReadAllText(Path.Combine(Global.TEMPLATES, Context.Config.template, Global.POST_HTML)),
-                new Dictionary<string, Func<string>>()
-                {
-                    { Global.VAR_NAME_CONTENT, () => MdConverter.Convert(File.ReadAllText(post.ArticleFileInfo.FullName)) }
-                }
-            );
-
-            File.WriteAllText(
-                GetOutFileNameAndEnsureDir(post),
-                renderedPost
-            );
-
-            return renderedPost;
         }
 
         private string GetOutFileNameAndEnsureDir(Post post)
@@ -79,13 +52,5 @@ namespace fruitfly
 
             return Path.Combine(outDirName, post.ArticleFileInfo.Name + ".html");
         }
-
-        IMdConverter MdConverter
-        {
-            get;
-        } = new MarkdigHtmlConverter();
-
-
-     
     }
 }

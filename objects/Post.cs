@@ -1,32 +1,39 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
 namespace fruitfly.objects
 {
-    public class Post
+    public class Post : HtmlContentObject
     {
-        public PostHeader Header
-        public PostHeader Header
+        public Post(Context context) : base(context)
+        {
+        }
+
+        public FileInfo File
+        {
+            get;
+        }
+
+        public string Title
         {
             get
             {
-
+                return File.Name;
             }
         }
+
         public DateTime Created
         {
-            get;
-            set;
+            get
+            {
+                return File.CreationTime;
+            }
         }
 
-        public string Article
-        {
-            get;
-            set;
-        } = "ddddddddddddddddd";
+        public override string Html => Context.Renderer.RenderPost(this);
 
+     
         public DirectoryInfo Directory
         {
             get;
@@ -39,12 +46,12 @@ namespace fruitfly.objects
 
         public string Name { get; internal set; }
 
-        public static Post TryParse(string contentDir)
+        public static Post TryParse(Context context, string contentDir)
         {
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
             {
-                return new Post()
+                return new Post(context)
                 {
                     Name = contentDir,
                     Day = Convert.ToInt32(m.Groups[1].Value),
@@ -59,7 +66,27 @@ namespace fruitfly.objects
         private bool IsTemplateContentFile(FileInfo fileInfo)
         {
             return fileInfo.FullName.EndsWith(".md");
-        }    
+        }
+
+
+        // public virtual string GetVariableValue(string name)
+        // {
+        //     // {post:title}
+        //     // {post:created}
+        //     if(name == "post:title")
+        //     {
+        //         return Title;
+        //     }
+        //     else if(name == "post:created")
+        //     {
+        //         create
+        //         // DateFormat f
+        //         // return Created.to
+        //     }
+
+        //     return Parent.GetVariableValue(name);
+        // }
+
 
         private FileInfo _ArticleFileInfo = null;
         public FileInfo ArticleFileInfo
@@ -79,6 +106,6 @@ namespace fruitfly.objects
 
                 return _ArticleFileInfo;
             }
-        }  
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace fruitfly
         {
             get;
             set;
-        } = "en_US";
+        }
 
         public string title
         {
