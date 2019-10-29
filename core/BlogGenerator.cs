@@ -22,7 +22,7 @@ namespace fruitfly
 
         public Blog GenerateBlog()
         {
-            var blog = new BlogScanner().Scan(Global.BLOG_INPUT);
+            var blog = new BlogScanner(Context).Scan(Global.BLOG_INPUT);
             RenderBlogPosts(blog);
             RenderIndex(blog);
             return blog;
@@ -41,14 +41,9 @@ namespace fruitfly
             var sb = new StringBuilder();
             foreach(var post in blog.Posts)
             {
-                sb.Append(RenderPostAsJumbotron(post));
+                sb.Append(HtmlRenderer.RenderPostAsJumbotron(post));
                 RenderPost(post);
             }
-        }
-
-        private string RenderPostAsJumbotron(Post post)
-        {
-            return $"<div class=\"jumbotron\"><h1 class=\"display-4\">{post.Header.title}</h1><p class=\"lead\">{post.Article}</p><hr class=\"my-4\"><p>It uses utility classes for typography and spacing to space content out within the larger container.</p><a class=\"btn btn-primary btn-lg\" href=\"#\" role=\"button\">Learn more</a></div>";
         }
 
         private string RenderPost(Post post)

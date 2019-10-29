@@ -3,7 +3,7 @@ using System;
 namespace fruitfly
 {
     [Serializable]
-    public class Configuration
+    public class Configuration : IVariableProvider
     {
         public string language
         {
@@ -22,5 +22,11 @@ namespace fruitfly
             get;
             set;
         } = "default";
+
+        string IVariableProvider.GetVariableValue(string name)
+        {
+            var propName = name.Split(":")[1];
+            return (string) GetType().InvokeMember(propName, System.Reflection.BindingFlags.GetProperty, null, this, null);
+        }        
     }
 }

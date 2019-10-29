@@ -5,12 +5,24 @@ namespace fruitfly
 {
     public class BlogScanner
     {
+        private BlogScanner()
+        {
+
+        }
+
+        private Context context;
+
+        public BlogScanner(Context context)
+        {
+            this.context = context;
+        }
+
         public Blog Scan(string rootDir)
         {
-            var blog = new Blog();
+            var blog = new Blog(context.Config);
             foreach(var directory in Directory.EnumerateDirectories(Global.BLOG_INPUT, "*.*", SearchOption.AllDirectories))
             {
-                var post = Post.TryParse(directory);
+                var post = Post.TryParse(blog, directory);
                 if(post != null)
                 {
                     System.Console.Out.WriteLine($"\t~o~ {directory}");
