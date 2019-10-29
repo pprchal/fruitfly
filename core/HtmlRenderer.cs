@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace fruitfly.objects
@@ -18,9 +19,14 @@ namespace fruitfly.objects
             );
         }
 
-        public string RenderPostAsJumbotron(Post post)
+        public string RenderPostRow(Post post)
         {
-            return "TODO Jumbo";
+            return $"{post.Name} (${Context.Renderer.ToLocaleDate(post.Created)})";
+        }
+
+        private string ToLocaleDate(DateTime date)
+        {
+            return date.ToString("d", new CultureInfo(Context.Config.language.Replace("_", "-")));
         }
 
         public string RenderPost(Post post)

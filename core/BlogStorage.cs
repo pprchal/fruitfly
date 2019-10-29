@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace fruitfly
@@ -25,6 +26,14 @@ namespace fruitfly
             }   
 
             return File.ReadAllText(fullFileName);
+        }
+
+        internal void WriteContent(string contentName, string content)
+        {
+            if(contentName == Global.INDEX_HTML)
+            {
+                File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.INDEX_HTML), content);
+            }
         }
     }
 }

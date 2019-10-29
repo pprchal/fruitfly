@@ -20,7 +20,10 @@ namespace fruitfly
         public Blog GenerateBlog()
         {
             var blog = new BlogScanner(Context).Scan(Global.BLOG_INPUT);
-            File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.INDEX_HTML), Context.Renderer.RenderBlog(blog));
+            Context.Storage.WriteContent(
+                Global.INDEX_HTML, 
+                Context.Renderer.RenderBlog(blog)
+            );
             RenderBlogPosts(blog);
             return blog;
         }
@@ -30,7 +33,7 @@ namespace fruitfly
             var sb = new StringBuilder();
             foreach(var post in blog.Posts)
             {
-                sb.Append(Context.Renderer.RenderPostAsJumbotron(post));
+                sb.Append(Context.Renderer.RenderPostRow(post));
 
                 File.WriteAllText(
                     GetOutFileNameAndEnsureDir(post),
