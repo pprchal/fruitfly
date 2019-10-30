@@ -1,28 +1,18 @@
+// Pavel Prchal, 2019
+
 using System.IO;
 using fruitfly.objects;
 
-namespace fruitfly
+namespace fruitfly.core
 {
-    public class BlogScanner
+    public class BlogScanner : BaseLogic
     {
-        private BlogScanner()
-        {
-
-        }
-
-        private Context context;
-
-        public BlogScanner(Context context)
-        {
-            this.context = context;
-        }
-
         public Blog Scan(string rootDir)
         {
-            var blog = new Blog(context);
+            var blog = new Blog();
             foreach(var directory in Directory.EnumerateDirectories(Global.BLOG_INPUT, "*.*", SearchOption.AllDirectories))
             {
-                var post = Post.TryParse(context, directory);
+                var post = Post.TryParse(directory);
                 if(post != null)
                 {
                     System.Console.Out.WriteLine($"\t~o~ {directory}");
@@ -31,11 +21,6 @@ namespace fruitfly
             }
 
             return blog;
-        }
-
-        private bool IsTemplateContentFile(FileInfo fileInfo)
-        {
-            return fileInfo.FullName.EndsWith(".md");
         }
     }
 }

@@ -1,6 +1,8 @@
+// Pavel Prchal, 2019
+
 using System;
 
-namespace fruitfly
+namespace fruitfly.objects
 {
     [Serializable]
     public class Configuration
@@ -11,6 +13,12 @@ namespace fruitfly
             set;
         }
 
+        public string home
+        {
+            get;
+            set;
+        }
+        
         public string title
         {
             get;
@@ -22,5 +30,11 @@ namespace fruitfly
             get;
             set;
         } = "default";
+
+        public string fullVersion
+        {
+            get => "1.0 preview";
+        }
+
     }
 }
