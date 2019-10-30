@@ -9,3 +9,6 @@ language: cs_CZ
 
 # blog title accessed ad {config:title}
 title: blog - Pavel Prchal
+
+# blog home url
+home: http://pavel.borec.cz

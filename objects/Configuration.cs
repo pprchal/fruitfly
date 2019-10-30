@@ -13,6 +13,12 @@ namespace fruitfly.objects
             set;
         }
 
+        public string home
+        {
+            get;
+            set;
+        }
+        
         public string title
         {
             get;
@@ -24,5 +30,11 @@ namespace fruitfly.objects
             get;
             set;
         } = "default";
+
+        public string fullVersion
+        {
+            get => "1.0 preview";
+        }
+
     }
 }
