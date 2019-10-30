@@ -1,3 +1,5 @@
+// Pavel Prchal, 2019
+
 using Markdig;
 
 namespace fruitfly
@@ -8,7 +10,10 @@ namespace fruitfly
 
         public MarkdigHtmlConverter()
         {
-            pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            pipeline = new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .UseBootstrap()
+                .Build();
         }
 
         string IMdConverter.Convert(string mdContent)

@@ -1,6 +1,8 @@
+// Pavel Prchal, 2019
+
 using System;
 
-namespace fruitfly
+namespace fruitfly.objects
 {
     [Serializable]
     public class Configuration

@@ -1,39 +1,58 @@
-using System;
+// Pavel Prchal, 2019
+
 using System.IO;
+using fruitfly.objects;
 
-namespace fruitfly
+namespace fruitfly.core
 {
-    public class BlogStorage
+    public class BlogStorage : BaseLogic
     {
-        private Context Context;
 
-        public BlogStorage(Context context)
-        {
-            this.Context = context;
-        }
-
-        public string LoadContent(string contentName)
+        public string LoadContent(TemplateItems templateItem)
         {
             var fullFileName = "";
 
-            if(contentName == Global.INDEX_HTML)
+            switch (templateItem)
             {
-                fullFileName = Path.Combine(Global.TEMPLATES, Context.Config.template, Global.INDEX_HTML);            
+                case TemplateItems.Index:
+                    fullFileName = Path.Combine(Global.TEMPLATES, Context.Config.template, Global.TEMPLATE_INDEX);
+                    break;
+                case TemplateItems.Post:
+                    fullFileName = Path.Combine(Global.TEMPLATES, Context.Config.template, Global.TEMPLATE_POST);
+                    break;
+                case TemplateItems.PostRow:
+                    fullFileName = Path.Combine(Global.TEMPLATES, Context.Config.template, Global.TEMPLATE_POST_TILE);
+                    break;
             }
-            else if(contentName == Global.POST_HTML)
-            {
-                fullFileName = Path.Combine(Global.TEMPLATES, Context.Config.template, Global.POST_HTML);         
-            }   
 
             return File.ReadAllText(fullFileName);
         }
 
-        internal void WriteContent(string contentName, string content)
+        internal void WriteContent(TemplateItems templateItem, string content, Post post = null)
         {
-            if(contentName == Global.INDEX_HTML)
+            switch (templateItem)
             {
-                File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.INDEX_HTML), content);
+                case TemplateItems.Index:
+                    File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.TEMPLATE_INDEX), content);
+                    break;
+                case TemplateItems.Post:
+                    File.WriteAllText(
+                        GetOutFileNameAndEnsureDir(post),
+                        content
+                    );
+                    break;
             }
         }
+
+        private string GetOutFileNameAndEnsureDir(Post post)
+        {
+            var outDirName = post.Name.Replace(Global.BLOG_INPUT + "\\", Global.BLOG_OUTPUT + "\\");
+            if(!Directory.Exists(outDirName))
+            {
+                Directory.CreateDirectory(outDirName);
+            }
+
+            return Path.Combine(outDirName, post.File.Name + ".html");
+        }        
     }
 }

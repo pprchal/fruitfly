@@ -1,52 +1,62 @@
-using fruitfly.objects;
+// Pavel Prchal, 2019
 
-namespace fruitfly
+using System;
+using System.Collections.Generic;
+using System.IO;
+using fruitfly.objects;
+using YamlDotNet.Serialization;
+
+namespace fruitfly.core
 {
     public class Context
     {
+        private Context()
+        {
+
+        }
+
+        public IConsole Console
+        {
+            get;
+        } = new Console();
+
         public Configuration Config
         {
             get;
             set;
         }
 
-        private HtmlRenderer _Renderer  = null;
-        public HtmlRenderer Renderer
+        public DateTime StartTime
         {
-            get
+            get;
+        } = DateTime.Now;
+
+        private Dictionary<Type, BaseLogic> Singletons = new Dictionary<Type, BaseLogic>();
+        public T GetLogic<T>() where T : BaseLogic, new()
+        {
+            var type = typeof(T);
+
+            if(!Singletons.ContainsKey(type))
             {
-                if(_Renderer == null)
-                {
-                    _Renderer = new HtmlRenderer(this);
-                }
-                return _Renderer;
+                Singletons.Add(type, new T() { Context = this });
             }
+
+            return Singletons[type] as T;
         }
 
-        private VariableBinder _Binder  = null;
-        public VariableBinder Binder
+        public static Context CreateContext()
         {
-            get
+            return new Context()
             {
-                if(_Binder == null)
-                {
-                    _Binder = new VariableBinder(this);
-                }
-                return _Binder;
-            }
+                Config = LoadYmlConfig()
+            };
         }
 
-        private BlogStorage _Storage  = null;
-        public BlogStorage Storage
+        private static Configuration LoadYmlConfig()
         {
-            get
-            {
-                if(_Storage == null)
-                {
-                    _Storage = new BlogStorage(this);
-                }
-                return _Storage;
-            }
+            return new DeserializerBuilder()
+                .Build()
+                .Deserialize<Configuration>(new StringReader(File.ReadAllText(Global.CONFIG_YML)));
         }
     }
 }
