@@ -1,27 +1,18 @@
+// Pavel Prchal, 2019
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+using fruitfly.objects;
 
-namespace fruitfly
+namespace fruitfly.core
 {
-    public class VariableBinder
+    public class VariableBinder : BaseLogic
     {
-        public Context Context { get; }
-
-        private VariableBinder()
-        {
-
-        }
-
-        public VariableBinder(Context context)
-        {
-            Context = context;
-        }
-        
-        public string BindVariables(string input, Dictionary<string, Func<string>> actions = null)
+        public string BindVariables(string content, Dictionary<string, Func<string>> actions = null)
         {
             return BindCustomActions(
-                BindConfigVariables(new StringBuilder(input)),
+                BindConfigVariables(new StringBuilder(content)),
                 actions
             ).ToString();
         }

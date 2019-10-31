@@ -1,5 +1,6 @@
-﻿using System.IO;
-using YamlDotNet.Serialization;
+﻿// Pavel Prchal, 2019
+
+using fruitfly.core;
 
 namespace fruitfly
 {
@@ -7,37 +8,19 @@ namespace fruitfly
     {
         static void Main(string[] args)
         {
-            System.Console.Out.WriteLine("~o~");
-            System.Console.Out.WriteLine("~o~ ~o~  FRUITFLY 1.0 Blog generator");
             new Program().Run(args);
         }
 
         private void Run(string[] args)
         {
+            var context = new Context();
             if(args.Length == 0)
             {
-                new BlogGenerator(Context).GenerateBlog();
+                context.GetLogic<BlogGenerator>().GenerateBlog(args);
             }
             else
             {
-                System.Console.Out.WriteLine("~o~ do you expect death-star? ~o~");
-            }
-        }
-
-        private Context _Context = null;
-        private Context Context
-        {
-            get
-            {
-                if(_Context == null)
-                {
-                    _Context = new Context();
-                    _Context.Config = new DeserializerBuilder()
-                        .Build()
-                        .Deserialize<Configuration>(new StringReader(File.ReadAllText(Global.CONFIG_YML)));
-                }
-
-                return _Context;
+                context.Console.WriteLine("~o~ did you expect death-star? ~o~");
             }
         }
     }

@@ -1,30 +1,55 @@
+// Pavel Prchal, 2019
+
+using System;
 using System.IO;
+using fruitfly.objects;
 
-namespace fruitfly
+namespace fruitfly.core
 {
-    public class BlogStorage
+    public class BlogStorage : BaseLogic
     {
-        private Context Context;
-
-        public BlogStorage(Context context)
+        public string LoadTemplate(TemplateItems templateItem)
         {
-            this.Context = context;
+            switch (templateItem)
+            {
+                case TemplateItems.Index: return LoadContent(Global.TEMPLATE_INDEX);
+                case TemplateItems.Post:  return LoadContent(Global.TEMPLATE_POST);
+                case TemplateItems.PostTile: return LoadContent(Global.TEMPLATE_POST_TILE);
+            }
+
+            throw new Exception($"Unknown template: [{templateItem}]");
         }
 
         public string LoadContent(string contentName)
         {
-            var fullFileName = "";
-
-            if(contentName == Global.INDEX_HTML)
-            {
-                fullFileName = Path.Combine(Global.TEMPLATES, Context.Config.template, Global.INDEX_HTML);            
-            }
-            else if(contentName == Global.POST_HTML)
-            {
-                fullFileName = Path.Combine(Global.TEMPLATES, Context.Config.template, Global.POST_HTML);         
-            }   
-
-            return File.ReadAllText(fullFileName);
+            return File.ReadAllText(Path.Combine(Global.TEMPLATES, Context.Config.template, contentName));
         }
+
+        internal void WriteContent(TemplateItems templateItem, string content, Post post = null)
+        {
+            switch (templateItem)
+            {
+                case TemplateItems.Index:
+                    File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.TEMPLATE_INDEX), content);
+                    break;
+                case TemplateItems.Post:
+                    File.WriteAllText(
+                        GetOutFileNameAndEnsureDir(post),
+                        content
+                    );
+                    break;
+            }
+        }
+
+        private string GetOutFileNameAndEnsureDir(Post post)
+        {
+            var outDirName = post.Name.Replace(Global.BLOG_INPUT + "\\", Global.BLOG_OUTPUT + "\\");
+            if(!Directory.Exists(outDirName))
+            {
+                Directory.CreateDirectory(outDirName);
+            }
+
+            return Path.Combine(outDirName, post.File.Name + ".html");
+        }        
     }
 }

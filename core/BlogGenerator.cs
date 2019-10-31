@@ -1,53 +1,44 @@
-using System.IO;
-using System.Text;
+// Pavel Prchal, 2019
+
+using System;
 using fruitfly.objects;
 
-namespace fruitfly
+namespace fruitfly.core
 {
-    public class BlogGenerator
+    public class BlogGenerator : BaseLogic
     {
-        public Context Context { get; }
-
-        private BlogGenerator()
+        public Blog GenerateBlog(string[] args)
         {
-        }
+            Context.Console.WriteLine("~o~ FRUITFLY 1.0 Blog generator");
 
-        public BlogGenerator(Context context)
-        {
-            Context = context;
-        }
+            var blog = Context.GetLogic<BlogScanner>().Scan(Global.BLOG_INPUT);
+            GenerateBlogPostsFiles(blog);
+            GenerateBlogIndexFile(blog);
 
-        public Blog GenerateBlog()
-        {
-            var blog = new BlogScanner(Context).Scan(Global.BLOG_INPUT);
-            File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.INDEX_HTML), Context.Renderer.RenderBlog(blog));
-            RenderBlogPosts(blog);
+            var seconds = new TimeSpan(DateTime.Now.Ticks - Context.StartTime.Ticks).TotalSeconds;
+            Context.Console.WriteLine($"{blog.Posts.Count} ~o~ generated at: ${seconds} second(s)");
+
             return blog;
         }
 
-        private void RenderBlogPosts(Blog blog)
+        private void GenerateBlogIndexFile(Blog blog)
         {
-            var sb = new StringBuilder();
-            foreach(var post in blog.Posts)
-            {
-                sb.Append(Context.Renderer.RenderPostAsJumbotron(post));
-
-                File.WriteAllText(
-                    GetOutFileNameAndEnsureDir(post),
-                    Context.Renderer.RenderPost(post)
-                );
-            }
+            Context.GetLogic<BlogStorage>().WriteContent(
+                templateItem: TemplateItems.Index, 
+                content: Context.GetLogic<HtmlRenderer>().Render(blog)
+            );
         }
 
-        private string GetOutFileNameAndEnsureDir(Post post)
+        private void GenerateBlogPostsFiles(Blog blog)
         {
-            var outDirName = post.Name.Replace(Global.BLOG_INPUT + "\\", Global.BLOG_OUTPUT + "\\");
-            if(!Directory.Exists(outDirName))
+            foreach(var post in blog.Posts)
             {
-                Directory.CreateDirectory(outDirName);
+                Context.GetLogic<BlogStorage>().WriteContent(
+                    templateItem: TemplateItems.Post, 
+                    content: Context.GetLogic<HtmlRenderer>().Render(post), 
+                    post: post
+                );
             }
-
-            return Path.Combine(outDirName, post.ArticleFileInfo.Name + ".html");
         }
     }
 }
