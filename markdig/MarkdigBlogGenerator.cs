@@ -12,6 +12,11 @@ namespace fruitfly
         {
             pipeline = new MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
+                .UseAutoLinks()
+                .UseDiagrams()
+                .UseEmojiAndSmiley()
+                .UseGlobalization()
+                .UseMediaLinks()
                 .UseBootstrap()
                 .Build();
         }
