@@ -1,0 +1,5 @@
+obj/
+bin/
+/FruitFly/blog_input/
+/FruitFly/blog_output/
+/FruitFly.Tests/obj
