@@ -23,7 +23,7 @@ namespace fruitfly.core
 
         private void GenerateBlogIndexFile(Blog blog)
         {
-            Context.GetLogic<BlogStorage>().WriteContent(
+            Context.GetLogic<Storage>().WriteContent(
                 templateItem: TemplateItems.Index, 
                 content: Context.GetLogic<HtmlRenderer>().Render(blog)
             );
@@ -33,7 +33,7 @@ namespace fruitfly.core
         {
             foreach(var post in blog.Posts)
             {
-                Context.GetLogic<BlogStorage>().WriteContent(
+                Context.GetLogic<Storage>().WriteContent(
                     templateItem: TemplateItems.Post, 
                     content: Context.GetLogic<HtmlRenderer>().Render(post), 
                     post: post

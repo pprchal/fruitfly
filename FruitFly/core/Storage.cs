@@ -6,7 +6,7 @@ using fruitfly.objects;
 
 namespace fruitfly.core
 {
-    public class BlogStorage : BaseLogic
+    public class Storage : BaseLogic
     {
         public string LoadTemplate(TemplateItems templateItem)
         {

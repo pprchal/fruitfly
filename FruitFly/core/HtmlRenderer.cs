@@ -32,7 +32,7 @@ namespace fruitfly.core
         private string RenderIndex(Blog blog)
         {
             return Context.GetLogic<VariableBinder>().BindVariables(
-                Context.GetLogic<BlogStorage>().LoadTemplate(TemplateItems.Index),
+                Context.GetLogic<Storage>().LoadTemplate(TemplateItems.Index),
                 new Dictionary<string, Func<string>>()
                 {
                     { Global.VAR_NAME_INDEX_POSTS, () => RenderPostRows(blog) }
@@ -43,7 +43,7 @@ namespace fruitfly.core
         private string RenderPost(Post post)
         {
             return Context.GetLogic<VariableBinder>().BindVariables(
-                Context.GetLogic<BlogStorage>().LoadTemplate(TemplateItems.Post),
+                Context.GetLogic<Storage>().LoadTemplate(TemplateItems.Post),
                 new Dictionary<string, Func<string>>()
                 {
                     { Global.VAR_NAME_CONTENT, () => MdConverter.Convert(File.ReadAllText(post.File.FullName)) }
@@ -54,7 +54,7 @@ namespace fruitfly.core
         private string RenderPostTile(Post post)
         {
             return Context.GetLogic<VariableBinder>().BindVariables(
-                Context.GetLogic<BlogStorage>().LoadTemplate(TemplateItems.PostTile),
+                Context.GetLogic<Storage>().LoadTemplate(TemplateItems.PostTile),
                 new Dictionary<string, Func<string>>()
                 {
                     { Global.VAR_NAME_POST_TITLE, () => post.Title },
@@ -100,22 +100,16 @@ namespace fruitfly.core
         } = new MarkdigHtmlConverter();
 
 
-        public Content LoadContentPart(string contentName)
-        {
-            var template = Context.GetLogic<BlogStorage>().LoadContent(contentName);
+        // public Content LoadContentPart(string contentName)
+        // {
+        //     var template = Context.GetLogic<Storage>().LoadContent(contentName);
 
-            var obj = new Content()
-            {
-                Html = template
-            };
+        //     var obj = new Content()
+        //     {
+        //         Html = template
+        //     };
 
-            return obj;
-
-        }
-
-        public void TTT()
-        {
-            var c = LoadContentPart("menu.html");
-        }
+        //     return obj;
+        // }
    }
 }
