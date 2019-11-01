@@ -1,6 +1,7 @@
 // Pavel Prchal, 2019
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using fruitfly.core;
@@ -9,6 +10,13 @@ namespace fruitfly.objects
 {
     public class Post : AbstractContentObject
     {
+        protected Context Context { get; }
+
+        public Post(Context context, AbstractContentObject parent) : base(parent)
+        {
+            Context = context;
+        }
+
         public string Title
         {
             get
@@ -43,12 +51,12 @@ namespace fruitfly.objects
 
         public string Name { get; internal set; }
 
-        public static Post TryParse(string contentDir)
+        public static Post TryParse(Context context, Blog blog, string contentDir)
         {
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
             {
-                return new Post()
+                return new Post(context, blog)
                 {
                     Name = contentDir,
                     Created = new DateTime(
@@ -68,16 +76,6 @@ namespace fruitfly.objects
         {
             return fileInfo.FullName.EndsWith(".md");
         }
-
-        // Global.VAR_NAME_POST_CREATED => Context.GetLogic<HtmlRenderer>().ToLocaleDate(Created) },
-        public override string GetVariableValue(string name) => name switch
-        {
-            Global.VAR_NAME_POST_TITLE => Title,
-            Global.VAR_NAME_POST_TITLE_TILE => TitleTile,
-            Global.VAR_NAME_POST_URL => Url,
-            _ => throw new Exception($"Cannot resolve property on post[{name}]")
-        };
-
 
         private FileInfo _File = null;
         public FileInfo File
@@ -99,12 +97,56 @@ namespace fruitfly.objects
             }
         }
 
+        public string MdContent
+        {
+            get
+            {
+                return System.IO.File.ReadAllText(File.FullName);
+            }
+        }
+
         public string Url 
         { 
             get
             {
-                return Directory.Parent.Parent.Name + "\\" +Directory.Parent.Name + "\\" + Directory.Name + "\\" + File.Name + ".html";
+                return Directory.Parent.Parent.Name + "\\" + Directory.Parent.Name + "\\" + Directory.Name + "\\" + File.Name + ".html";
             }
         }
+        
+        public override string GetVariableValue(Variable variable) => variable.Name switch
+        {
+            Global.VAR_NAME_POST_TITLE => Title,
+            Global.VAR_NAME_POST_TITLE_TILE => TitleTile,
+            Global.VAR_NAME_POST_CREATED => ToLocaleDate(Created),
+            Global.VAR_NAME_POST_URL => Url,
+            Global.VAR_NAME_POST_CONTENT => MdConverter.Convert(MdContent),
+            _ => Parent.GetVariableValue(variable)
+        };
+
+
+        private CultureInfo _Culture = null;
+
+        CultureInfo Culture
+        {
+            get
+            {
+                if (_Culture == null)
+                {
+                    _Culture = new CultureInfo(Context.Config.language.Replace("_", "-"));
+                }
+                return _Culture;
+            }
+        }
+
+
+        private string ToLocaleDate(DateTime date)
+        {
+            return date.ToString("d", Culture);
+        }
+
+        IMdConverter MdConverter
+        {
+            get;
+        } = new MarkdigHtmlConverter();
     }
 }

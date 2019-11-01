@@ -8,7 +8,7 @@ using YamlDotNet.Serialization;
 
 namespace fruitfly.core
 {
-    public class Context
+    public class Context : IContext
     {
         public Context()
         {
@@ -19,10 +19,19 @@ namespace fruitfly.core
             get;
         } = new Console();
 
+        Configuration _Configuration = null;
         public Configuration Config
         {
-            get;
-        } = LoadYmlConfig();
+            get
+            {
+                if(_Configuration == null)
+                {
+                    _Configuration = (this as IContext).CreateConfig();
+                }
+
+                return _Configuration;
+            }
+        }
 
         public DateTime StartTime
         {
@@ -30,7 +39,7 @@ namespace fruitfly.core
         } = DateTime.Now;
 
         private Dictionary<Type, BaseLogic> Singletons = new Dictionary<Type, BaseLogic>();
-        public T GetLogic<T>() where T : BaseLogic, new()
+        public virtual T GetLogic<T>() where T : BaseLogic, new()
         {
             var type = typeof(T);
 
@@ -42,11 +51,16 @@ namespace fruitfly.core
             return Singletons[type] as T;
         }
 
-        private static Configuration LoadYmlConfig()
+        protected virtual Configuration CreateYamlConfig(TextReader yamlReader)
         {
             return new DeserializerBuilder()
                 .Build()
-                .Deserialize<Configuration>(new StringReader(File.ReadAllText(Global.CONFIG_YML)));
+                .Deserialize<Configuration>(yamlReader);
+        }
+
+        public virtual Configuration CreateConfig()
+        {
+            return CreateYamlConfig(new StringReader(File.ReadAllText(Global.CONFIG_YML)));
         }
     }
 }

@@ -8,31 +8,31 @@ namespace fruitfly.core
 {
     public class Storage : BaseLogic
     {
-        public string LoadTemplate(TemplateItems templateItem)
+        public string LoadTemplate(Templates template)
         {
-            switch (templateItem)
+            switch (template)
             {
-                case TemplateItems.Index: return LoadContent(Global.TEMPLATE_INDEX);
-                case TemplateItems.Post:  return LoadContent(Global.TEMPLATE_POST);
-                case TemplateItems.PostTile: return LoadContent(Global.TEMPLATE_POST_TILE);
+                case Templates.Index: return LoadContent(Global.TEMPLATE_INDEX);
+                case Templates.Post:  return LoadContent(Global.TEMPLATE_POST);
+                case Templates.PostTile: return LoadContent(Global.TEMPLATE_POST_TILE);
             }
 
-            throw new Exception($"Unknown template: [{templateItem}]");
+            throw new Exception($"Unknown template: [{template}]");
         }
 
         public string LoadContent(string contentName)
         {
-            return File.ReadAllText(Path.Combine(Global.TEMPLATES, Context.Config.template, contentName));
+            return File.ReadAllText(Path.Combine(Context.Config.rootDir, Global.TEMPLATES, Context.Config.template, contentName));
         }
 
-        internal void WriteContent(TemplateItems templateItem, string content, Post post = null)
+        internal void WriteContent(Templates template, string content, Post post = null)
         {
-            switch (templateItem)
+            switch (template)
             {
-                case TemplateItems.Index:
-                    File.WriteAllText(Path.Combine(Global.BLOG_OUTPUT, Global.TEMPLATE_INDEX), content);
+                case Templates.Index:
+                    File.WriteAllText(Path.Combine(Context.Config.rootDir, Global.BLOG_OUTPUT, Global.TEMPLATE_INDEX), content);
                     break;
-                case TemplateItems.Post:
+                case Templates.Post:
                     File.WriteAllText(
                         GetOutFileNameAndEnsureDir(post),
                         content

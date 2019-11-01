@@ -2,7 +2,7 @@
 
 namespace fruitfly.objects
 {
-    public enum TemplateItems
+    public enum Templates
     {
         Post,
         PostTile,

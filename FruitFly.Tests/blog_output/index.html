@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
-<html lang="{config:language}">
+<!DOCTYPE html>
+<html lang="cs_CZ">
 
 <head>
   <meta charset="utf-8" />
-  <title>{config:title}</title>
+  <title>blog - Pavel Prchal</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
 </head>
 
@@ -12,7 +12,7 @@
 
   <div class="container">
     <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">{config:title}</a>
+      <a class="navbar-brand" href="#">blog - Pavel Prchal</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -33,7 +33,21 @@
 
   <div class="container">
     <h2>Příspěvky</h2>
-    {blog:posts}
+    <div class="jumbotron">
+    <h1 class="display-4">{post:title}</h1>
+    <p class="lead">{post:titleTile}</p>
+    <hr class="my-4">
+    <p>Vytvořeno: {post:created}</p>
+    <a class="btn btn-primary btn-lg" href="{post:url}" role="button">Na článek ></a>
+</div>
+<div class="jumbotron">
+    <h1 class="display-4">{post:title}</h1>
+    <p class="lead">{post:titleTile}</p>
+    <hr class="my-4">
+    <p>Vytvořeno: {post:created}</p>
+    <a class="btn btn-primary btn-lg" href="{post:url}" role="button">Na článek ></a>
+</div>
+
   </div>
 </body>
 

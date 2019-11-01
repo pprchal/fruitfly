@@ -4,6 +4,6 @@ namespace fruitfly.core
 {
     public interface IVariableSource
     {
-        string GetVariableValue(string name);
+        string GetVariableValue(Variable variable);
     }
 }

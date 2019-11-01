@@ -7,12 +7,21 @@ namespace fruitfly.core
 {
     public class BlogScanner : BaseLogic
     {
-        public Blog Scan(string rootDir)
+        public Blog Scan()
         {
-            var blog = new Blog();
-            foreach(var directory in Directory.EnumerateDirectories(Global.BLOG_INPUT, "*.*", SearchOption.AllDirectories))
+            return Scan(Context.Config.rootDir == null ?
+                Global.BLOG_INPUT :
+                Path.Combine(Context.Config.rootDir, Global.BLOG_INPUT)
+            );
+        }
+
+        private Blog Scan(string rootDir)
+        {
+            var blog = new Blog(null, Context);
+
+            foreach(var directory in Directory.EnumerateDirectories(rootDir, "*.*", SearchOption.AllDirectories))
             {
-                var post = Post.TryParse(directory);
+                var post = Post.TryParse(Context, blog, directory);
                 if(post != null)
                 {
                     System.Console.Out.WriteLine($"\t~o~ {directory}");

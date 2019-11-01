@@ -1,115 +1,35 @@
 // Pavel Prchal, 2019
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Text;
 using fruitfly.objects;
 
 namespace fruitfly.core
 {
     public class HtmlRenderer : BaseLogic
     {
-        public string Render(AbstractContentObject contentObject, TemplateItems? templateItem = null)
+        public string Render(AbstractContentObject contentObject, Templates? templateItem = null)
         {
             if(contentObject is Blog)
             {
-                return RenderIndex(contentObject as Blog);
+                return RenderInternal(contentObject, Templates.Index);
             }
-            else if(contentObject is Post)
+            else if (templateItem != null && templateItem.Value == Templates.PostTile)
             {
-                return RenderPost(contentObject as Post);
+                return RenderInternal(contentObject, Templates.PostTile);
             }
-            else if(contentObject is Post && templateItem != null && templateItem.Value == TemplateItems.PostTile)
+            else if (contentObject is Post)
             {
-                return RenderPostTile(contentObject as Post);
+                return RenderInternal(contentObject, Templates.Post);
             }
 
             return "";
         }
 
-        private string RenderIndex(Blog blog)
+        private string RenderInternal(AbstractContentObject contentObject, Templates template)
         {
-            return Context.GetLogic<VariableBinder>().BindVariables(
-                Context.GetLogic<Storage>().LoadTemplate(TemplateItems.Index),
-                new Dictionary<string, Func<string>>()
-                {
-                    { Global.VAR_NAME_INDEX_POSTS, () => RenderPostRows(blog) }
-                }
-            );
+            return Context.GetLogic<VariableBinder>().Bind(
+                Context.GetLogic<Storage>().LoadTemplate(template),
+                contentObject
+            ).ToString();
         }
-
-        private string RenderPost(Post post)
-        {
-            return Context.GetLogic<VariableBinder>().BindVariables(
-                Context.GetLogic<Storage>().LoadTemplate(TemplateItems.Post),
-                new Dictionary<string, Func<string>>()
-                {
-                    { Global.VAR_NAME_CONTENT, () => MdConverter.Convert(File.ReadAllText(post.File.FullName)) }
-                }
-            );
-        }
-
-        private string RenderPostTile(Post post)
-        {
-            return Context.GetLogic<VariableBinder>().BindVariables(
-                Context.GetLogic<Storage>().LoadTemplate(TemplateItems.PostTile),
-                new Dictionary<string, Func<string>>()
-                {
-                    { Global.VAR_NAME_POST_TITLE, () => post.Title },
-                    { Global.VAR_NAME_POST_TITLE_TILE, () => post.TitleTile },
-                    { Global.VAR_NAME_POST_CREATED, () => Context.GetLogic<HtmlRenderer>().ToLocaleDate(post.Created) },
-                    { Global.VAR_NAME_POST_URL, () => post.Url }
-                }
-            );
-        }
-
-        private string RenderPostRows(Blog blog)
-        {
-            var sb = new StringBuilder();
-            foreach(var post in blog.Posts)
-            {
-                sb.Append(RenderPostTile(post));
-            }
-            return sb.ToString();
-        }
-
-
-        private CultureInfo _Culture = null;
-        CultureInfo Culture
-        {
-            get
-            {
-                if(_Culture == null)
-                {
-                    _Culture = new CultureInfo(Context.Config.language.Replace("_", "-"));
-                }
-                return _Culture;
-            }
-        }
-        
-        private string ToLocaleDate(DateTime date)
-        {
-            return date.ToString("d", Culture);
-        }
-
-        IMdConverter MdConverter
-        {
-            get;
-        } = new MarkdigHtmlConverter();
-
-
-        // public Content LoadContentPart(string contentName)
-        // {
-        //     var template = Context.GetLogic<Storage>().LoadContent(contentName);
-
-        //     var obj = new Content()
-        //     {
-        //         Html = template
-        //     };
-
-        //     return obj;
-        // }
    }
 }

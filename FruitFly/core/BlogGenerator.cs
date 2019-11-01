@@ -11,7 +11,7 @@ namespace fruitfly.core
         {
             Context.Console.WriteLine("~o~ FRUITFLY 1.0 Blog generator");
 
-            var blog = Context.GetLogic<BlogScanner>().Scan(Global.BLOG_INPUT);
+            var blog = Context.GetLogic<BlogScanner>().Scan();
             GenerateBlogPostsFiles(blog);
             GenerateBlogIndexFile(blog);
 
@@ -24,7 +24,7 @@ namespace fruitfly.core
         private void GenerateBlogIndexFile(Blog blog)
         {
             Context.GetLogic<Storage>().WriteContent(
-                templateItem: TemplateItems.Index, 
+                template: Templates.Index, 
                 content: Context.GetLogic<HtmlRenderer>().Render(blog)
             );
         }
@@ -34,7 +34,7 @@ namespace fruitfly.core
             foreach(var post in blog.Posts)
             {
                 Context.GetLogic<Storage>().WriteContent(
-                    templateItem: TemplateItems.Post, 
+                    template: Templates.Post, 
                     content: Context.GetLogic<HtmlRenderer>().Render(post), 
                     post: post
                 );

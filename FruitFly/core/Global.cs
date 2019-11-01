@@ -26,6 +26,7 @@ namespace fruitfly.core
         public const string VAR_NAME_POST_TITLE_TILE = "titleTile";
         public const string VAR_NAME_POST_CREATED = "created";
         public const string VAR_NAME_POST_URL = "url";
+        public const string VAR_NAME_POST_CONTENT = "content";
 
     }
 }

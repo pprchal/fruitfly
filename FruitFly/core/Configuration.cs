@@ -8,6 +8,12 @@ namespace fruitfly.objects
     [Serializable]
     public class Configuration : IVariableSource
     {
+        public string rootDir
+        {
+            get;
+            set;
+        } = "";
+
         public string language
         {
             get;
@@ -37,9 +43,9 @@ namespace fruitfly.objects
             get => "1.0 preview";
         }
 
-        string IVariableSource.GetVariableValue(string name)
+        string IVariableSource.GetVariableValue(Variable variable)
         {
-            return this.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, this, null) as string;
+            return GetType().InvokeMember(variable.Name, System.Reflection.BindingFlags.GetProperty, null, this, null) as string;
         }
     }
 }

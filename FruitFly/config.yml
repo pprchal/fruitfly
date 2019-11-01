@@ -1,3 +1,11 @@
-template: default
+# optional
+# template: default
+
+# required
 language: cs_CZ
+
+
 title: blog - Pavel Prchal
+
+# optional
+rootDir: z:\Shared\fruitfly\FruitFly
