@@ -17,7 +17,7 @@ namespace fruitfly.core
 
         private Blog Scan(string rootDir)
         {
-            var blog = new Blog(null, Context);
+            var blog = new Blog(Context, null);
 
             foreach(var directory in Directory.EnumerateDirectories(rootDir, "*.*", SearchOption.AllDirectories))
             {

@@ -6,13 +6,11 @@ namespace fruitfly.objects
 {
     public abstract class AbstractContentObject : IVariableSource
     {
-        private AbstractContentObject()
-        {
+        protected Context Context { get; }
 
-        }
-
-        public AbstractContentObject(AbstractContentObject parent)
+        public AbstractContentObject(Context context, AbstractContentObject parent)
         {
+            Context = context;
             Parent = parent;
         }
 
@@ -21,7 +19,16 @@ namespace fruitfly.objects
             get;
         }
 
+        public virtual string GetVariableValue(Variable variable)
+        {
+            return "ggg----gggg";
+            // if(variable.Scope == Global.TEMPLATE)
+            // {
+            //     Context.GetLogic<VariableBinder>().Bind(
+            //         Context.GetLogic<Storage>().LoadTemplate(variable.Name),
+            //         Parent);
 
-        public abstract string GetVariableValue(Variable variable);
+            // }
+        }
     }
 }

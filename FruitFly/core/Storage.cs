@@ -12,17 +12,17 @@ namespace fruitfly.core
         {
             switch (template)
             {
-                case Templates.Index: return LoadContent(Global.TEMPLATE_INDEX);
-                case Templates.Post:  return LoadContent(Global.TEMPLATE_POST);
-                case Templates.PostTile: return LoadContent(Global.TEMPLATE_POST_TILE);
+                case Templates.Index: return LoadTemplate(Global.TEMPLATE_INDEX);
+                case Templates.Post:  return LoadTemplate(Global.TEMPLATE_POST);
+                case Templates.PostTile: return LoadTemplate(Global.TEMPLATE_POST_TILE);
             }
 
             throw new Exception($"Unknown template: [{template}]");
         }
 
-        public string LoadContent(string contentName)
+        public string LoadTemplate(string templateName)
         {
-            return File.ReadAllText(Path.Combine(Context.Config.rootDir, Global.TEMPLATES, Context.Config.template, contentName));
+            return File.ReadAllText(Path.Combine(Context.Config.rootDir, Global.TEMPLATES, Context.Config.template, templateName));
         }
 
         internal void WriteContent(Templates template, string content, Post post = null)

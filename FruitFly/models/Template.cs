@@ -6,7 +6,7 @@ namespace fruitfly.objects
 {
     public class Template : AbstractContentObject
     {
-        public Template(AbstractContentObject parent) : base(parent)
+        public Template(Context context, AbstractContentObject parent) : base(context, parent)
         {
         }
 

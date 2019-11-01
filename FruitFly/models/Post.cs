@@ -10,11 +10,9 @@ namespace fruitfly.objects
 {
     public class Post : AbstractContentObject
     {
-        protected Context Context { get; }
 
-        public Post(Context context, AbstractContentObject parent) : base(parent)
+        public Post(Context context, AbstractContentObject parent) : base(context, parent)
         {
-            Context = context;
         }
 
         public string Title
@@ -113,13 +111,13 @@ namespace fruitfly.objects
             }
         }
         
-        public override string GetVariableValue(Variable variable) => variable.Name switch
+        public override string GetVariableValue(Variable variable) => variable switch
         {
-            Global.VAR_NAME_POST_TITLE => Title,
-            Global.VAR_NAME_POST_TITLE_TILE => TitleTile,
-            Global.VAR_NAME_POST_CREATED => ToLocaleDate(Created),
-            Global.VAR_NAME_POST_URL => Url,
-            Global.VAR_NAME_POST_CONTENT => MdConverter.Convert(MdContent),
+            { Scope: "post", Name: Global.VAR_NAME_POST_TITLE }  => Title,
+            { Scope: "post", Name: Global.VAR_NAME_POST_TITLE_TILE }  => TitleTile,
+            { Scope: "post", Name: Global.VAR_NAME_POST_CREATED }  => ToLocaleDate(Created),
+            { Scope: "post", Name: Global.VAR_NAME_POST_URL } => Url,
+            { Scope: "post", Name: Global.VAR_NAME_POST_CONTENT }  => MdConverter.Convert(MdContent),
             _ => Parent.GetVariableValue(variable)
         };
 
@@ -137,7 +135,6 @@ namespace fruitfly.objects
                 return _Culture;
             }
         }
-
 
         private string ToLocaleDate(DateTime date)
         {

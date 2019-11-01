@@ -8,11 +8,8 @@ namespace fruitfly.objects
 {
     public class Blog : AbstractContentObject
     {
-        private readonly Context Context;
-
-        public Blog(AbstractContentObject parent, Context context) : base(parent)
+        public Blog(Context context, AbstractContentObject parent) : base(context, parent)
         {
-            Context = context;
         }
 
         public List<Post> Posts
@@ -20,19 +17,19 @@ namespace fruitfly.objects
             get;
         } = new List<Post>();
 
-        public override string GetVariableValue(Variable variable) => variable.Name switch
+        public override string GetVariableValue(Variable variable) => variable switch
         {
-            Global.VAR_NAME_INDEX_POSTS => RenderPostRows(this),
-            _ => (Context.Config as IVariableSource).GetVariableValue(variable)
-            // throw new Exception($"Cannot resolve variable[{variable.ReplaceBlock}] on post[{File.FullName}]")
+            { Scope: "config" } => (Context.Config as IVariableSource).GetVariableValue(variable),
+            { Scope: "blog", Name: Global.VAR_NAME_INDEX_POSTS } => RenderPostTiles(),
+            _ => throw new System.Exception($"GetVariableValue {variable.ReplaceBlock}")
         };
 
-        private string RenderPostRows(Blog blog)
+        private string RenderPostTiles()
         {
             var sb = new StringBuilder();
-            foreach (var post in blog.Posts)
+            foreach (var post in Posts)
             {
-                sb.Append(Context.GetLogic<HtmlRenderer>().Render(post, Templates.PostTile));
+                sb.Append(Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_POST_TILE, post));
             }
             return sb.ToString();
         }

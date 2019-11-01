@@ -28,5 +28,8 @@ namespace fruitfly.core
         public const string VAR_NAME_POST_URL = "url";
         public const string VAR_NAME_POST_CONTENT = "content";
 
+
+        public const string TEMPLATE = "template";
+
     }
 }
