@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using fruitfly.objects;
 
 namespace fruitfly.core
@@ -38,7 +39,7 @@ namespace fruitfly.core
 
             foreach(var directory in Directory.EnumerateDirectories(rootDir, "*.*", SearchOption.AllDirectories))
             {
-                var post = Post.TryParse(Context, blog, directory);
+                var post = TryParsePost(Context, blog, directory);
                 if(post != null)
                 {
                     System.Console.Out.WriteLine($"\t~o~ {directory}");
@@ -69,5 +70,42 @@ namespace fruitfly.core
         {
             return System.IO.File.ReadAllText(storageId);
         }
+
+        private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
+
+        private static Post TryParsePost(Context context, Blog blog, string contentDir)
+        {
+
+            var m = TemplateRe.Match(contentDir);
+            if(m.Success)
+            {
+                var dir = new DirectoryInfo(contentDir);
+                foreach(var fileInfo in dir.EnumerateFiles("*.md"))
+                {
+                    if(IsTemplateContentFile(fileInfo))
+                    {
+                        return new Post(context, blog)
+                        {
+                            Name = fileInfo.Name,
+                            Title = fileInfo.Name.Substring(0, fileInfo.Name.Length - ".md".Length),
+                            StorageId = fileInfo.FullName,
+                            Created = new DateTime(
+                                Convert.ToInt32(m.Groups[1].Value), 
+                                Convert.ToInt32(m.Groups[2].Value), 
+                                Convert.ToInt32(m.Groups[3].Value)
+                            ),
+                            Number = Convert.ToInt32(m.Groups[4].Value)
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }     
+
+        private static bool IsTemplateContentFile(FileInfo fileInfo)
+        {
+            return fileInfo.FullName.EndsWith(".md");
+        }      
     }
 }

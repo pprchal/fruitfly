@@ -1,16 +1,14 @@
 // Pavel Prchal, 2019
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Text.RegularExpressions;
 using fruitfly.core;
 
 namespace fruitfly.objects
 {
     public class Post : AbstractContentObject
     {
-
         public Post(Context context, AbstractContentObject parent) : base(context, parent)
         {
         }
@@ -47,42 +45,10 @@ namespace fruitfly.objects
             set;
         }
 
-        public int Number;
-
-        private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
-
-        public static Post TryParse(Context context, Blog blog, string contentDir)
+        public int Number
         {
-            var m = TemplateRe.Match(contentDir);
-            if(m.Success)
-            {
-                var dir = new DirectoryInfo(contentDir);
-                foreach(var fileInfo in dir.EnumerateFiles("*.md"))
-                {
-                    if(IsTemplateContentFile(fileInfo))
-                    {
-                        return new Post(context, blog)
-                        {
-                            Name = fileInfo.Name,
-                            Title = fileInfo.Name.Substring(0, fileInfo.Name.Length - ".md".Length),
-                            StorageId = fileInfo.FullName,
-                            Created = new DateTime(
-                                Convert.ToInt32(m.Groups[1].Value), 
-                                Convert.ToInt32(m.Groups[2].Value), 
-                                Convert.ToInt32(m.Groups[3].Value)
-                            ),
-                            Number = Convert.ToInt32(m.Groups[4].Value)
-                        };
-                    }
-                }
-            }
-
-            return null;
-        }    
-
-        private static bool IsTemplateContentFile(FileInfo fileInfo)
-        {
-            return fileInfo.FullName.EndsWith(".md");
+            get;
+            set;
         }
 
         public string MdContent
@@ -93,16 +59,23 @@ namespace fruitfly.objects
             }
         }
 
+        public override List<string> BuildFolderStack()
+        {
+            return new List<string>()
+            {
+                $"y{Created.Year}",
+                $"m{Created.Month}",
+                $"d{Created.Day}_post{Number}"
+            };
+        }        
 
         public string Url 
         { 
             get
             {
-                var urlFolderStack = BlogGenerator.BuildFolderStack(this);
+                var urlFolderStack = BuildFolderStack();
                 urlFolderStack.Add(Name + ".html");
-                var x = string.Join("\\", urlFolderStack);
-                return x;
-                // return Directory.Parent.Parent.Name + "\\" + Directory.Parent.Name + "\\" + Directory.Name + "\\" + ;
+                return string.Join("\\", urlFolderStack);
             }
         }
         
@@ -119,7 +92,7 @@ namespace fruitfly.objects
 
         private CultureInfo _Culture = null;
 
-        CultureInfo Culture
+        private CultureInfo Culture
         {
             get
             {
@@ -136,7 +109,7 @@ namespace fruitfly.objects
             return date.ToString("d", Culture);
         }
 
-        IMdConverter MdConverter
+        private IMdConverter MdConverter
         {
             get;
         } = new MarkdigHtmlConverter();

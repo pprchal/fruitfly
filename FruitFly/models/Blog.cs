@@ -33,5 +33,10 @@ namespace fruitfly.objects
             }
             return sb.ToString();
         }
+
+        public override List<string> BuildFolderStack()
+        {
+            return new List<string>();
+        }        
     }
 }

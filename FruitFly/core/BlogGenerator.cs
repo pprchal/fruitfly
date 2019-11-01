@@ -22,7 +22,7 @@ namespace fruitfly.core
         private void GenerateBlogIndexFile(Blog blog)
         {
             Context.GetLogic<Storage>().WriteContent(
-                folderStack: BuildFolderStack(blog),
+                folderStack: blog.BuildFolderStack(),
                 name: Global.TEMPLATE_INDEX, 
                 format: RenderedFormats.html,
                 content: Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_INDEX, blog)
@@ -34,27 +34,12 @@ namespace fruitfly.core
             foreach(var post in blog.Posts)
             {
                 Context.GetLogic<Storage>().WriteContent(
-                    folderStack: BuildFolderStack(post),
+                    folderStack: post.BuildFolderStack(),
                     name: post.Name,
                     format: RenderedFormats.html, 
                     content: Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_POST, post)
                 );
             }
-        }
-        public static List<string> BuildFolderStack(AbstractContentObject contentObject)
-        {
-            if(contentObject is Blog)
-            {
-                return new List<string>();
-            }
-
-            var post = contentObject as Post;
-            return new List<string>()
-            {
-                $"y{post.Created.Year}",
-                $"m{post.Created.Month}",
-                $"d{post.Created.Day}_post{post.Number}"
-            };
         }
     }
 }

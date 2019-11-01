@@ -1,5 +1,6 @@
 // Pavel Prchal, 2019
 
+using System.Collections.Generic;
 using fruitfly.core;
 
 namespace fruitfly.objects
@@ -19,16 +20,8 @@ namespace fruitfly.objects
             get;
         }
 
-        public virtual string GetVariableValue(Variable variable)
-        {
-            return "ggg----gggg";
-            // if(variable.Scope == Global.TEMPLATE)
-            // {
-            //     Context.GetLogic<VariableBinder>().Bind(
-            //         Context.GetLogic<Storage>().LoadTemplate(variable.Name),
-            //         Parent);
+        public abstract string GetVariableValue(Variable variable);
 
-            // }
-        }
+        public abstract List<string> BuildFolderStack();
     }
 }
