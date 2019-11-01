@@ -1,3 +1,5 @@
+// Pavel Prchal, 2019
+
 namespace fruitfly
 {
     public interface IMdConverter

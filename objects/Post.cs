@@ -1,21 +1,22 @@
+// Pavel Prchal, 2019
+
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
 namespace fruitfly.objects
 {
-    public class Post : HtmlContentObject
+    public class Post : ContentObject
     {
-        public Post(Context context) : base(context)
-        {
-        }
-
-        public FileInfo File
-        {
-            get;
-        }
-
         public string Title
+        {
+            get
+            {
+                return File.Name.Substring(0, File.Name.Length - ".md".Length);
+            }
+        }
+
+        public string TitleTile
         {
             get
             {
@@ -25,15 +26,10 @@ namespace fruitfly.objects
 
         public DateTime Created
         {
-            get
-            {
-                return File.CreationTime;
-            }
+            get;
+            set;
         }
 
-        public override string Html => Context.Renderer.RenderPost(this);
-
-     
         public DirectoryInfo Directory
         {
             get;
@@ -42,20 +38,24 @@ namespace fruitfly.objects
 
         public int Day;
         public int Number;
-        private static Regex TemplateRe = new Regex("d([0-9]+)_post([0-9]+$)", RegexOptions.Compiled);
+        private static Regex TemplateRe = new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         public string Name { get; internal set; }
 
-        public static Post TryParse(Context context, string contentDir)
+        public static Post TryParse(string contentDir)
         {
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
             {
-                return new Post(context)
+                return new Post()
                 {
                     Name = contentDir,
-                    Day = Convert.ToInt32(m.Groups[1].Value),
-                    Number = Convert.ToInt32(m.Groups[2].Value),
+                    Created = new DateTime(
+                        Convert.ToInt32(m.Groups[1].Value), 
+                        Convert.ToInt32(m.Groups[2].Value), 
+                        Convert.ToInt32(m.Groups[3].Value)
+                    ),
+                    Number = Convert.ToInt32(m.Groups[4].Value),
                     Directory = new DirectoryInfo(contentDir)
                 };
             }
@@ -68,43 +68,31 @@ namespace fruitfly.objects
             return fileInfo.FullName.EndsWith(".md");
         }
 
-
-        // public virtual string GetVariableValue(string name)
-        // {
-        //     // {post:title}
-        //     // {post:created}
-        //     if(name == "post:title")
-        //     {
-        //         return Title;
-        //     }
-        //     else if(name == "post:created")
-        //     {
-        //         create
-        //         // DateFormat f
-        //         // return Created.to
-        //     }
-
-        //     return Parent.GetVariableValue(name);
-        // }
-
-
-        private FileInfo _ArticleFileInfo = null;
-        public FileInfo ArticleFileInfo
+        private FileInfo _File = null;
+        public FileInfo File
         {
             get
             {
-                if(_ArticleFileInfo == null)
+                if(_File == null)
                 {
                     foreach(var fileInfo in Directory.EnumerateFiles("*.md"))
                     {
                         if(IsTemplateContentFile(fileInfo))
                         {
-                            _ArticleFileInfo = fileInfo;
+                            _File = fileInfo;
                         }
                     }
                 }
 
-                return _ArticleFileInfo;
+                return _File;
+            }
+        }
+
+        public string Url 
+        { 
+            get
+            {
+                return Directory.Parent.Parent.Name + "\\" +Directory.Parent.Name + "\\" + Directory.Name + "\\" + File.Name + ".html";
             }
         }
     }
