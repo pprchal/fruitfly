@@ -15,19 +15,23 @@ namespace fruitfly.objects
         {
         }
 
+        public string Name
+        {
+            get;
+            set;
+        }
+
         public string Title
         {
-            get
-            {
-                return File.Name.Substring(0, File.Name.Length - ".md".Length);
-            }
+            get;
+            set;
         }
 
         public string TitleTile
         {
             get
             {
-                return File.Name;
+                return Title;
             }
         }
 
@@ -37,76 +41,68 @@ namespace fruitfly.objects
             set;
         }
 
-        public DirectoryInfo Directory
+        public string StorageId
         {
             get;
             set;
         }
 
         public int Number;
-        private static Regex TemplateRe = new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
-        public string Name { get; internal set; }
+        private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         public static Post TryParse(Context context, Blog blog, string contentDir)
         {
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
             {
-                return new Post(context, blog)
+                var dir = new DirectoryInfo(contentDir);
+                foreach(var fileInfo in dir.EnumerateFiles("*.md"))
                 {
-                    Name = contentDir,
-                    Created = new DateTime(
-                        Convert.ToInt32(m.Groups[1].Value), 
-                        Convert.ToInt32(m.Groups[2].Value), 
-                        Convert.ToInt32(m.Groups[3].Value)
-                    ),
-                    Number = Convert.ToInt32(m.Groups[4].Value),
-                    Directory = new DirectoryInfo(contentDir)
-                };
+                    if(IsTemplateContentFile(fileInfo))
+                    {
+                        return new Post(context, blog)
+                        {
+                            Name = fileInfo.Name,
+                            Title = fileInfo.Name.Substring(0, fileInfo.Name.Length - ".md".Length),
+                            StorageId = fileInfo.FullName,
+                            Created = new DateTime(
+                                Convert.ToInt32(m.Groups[1].Value), 
+                                Convert.ToInt32(m.Groups[2].Value), 
+                                Convert.ToInt32(m.Groups[3].Value)
+                            ),
+                            Number = Convert.ToInt32(m.Groups[4].Value)
+                        };
+                    }
+                }
             }
 
             return null;
         }    
 
-        private bool IsTemplateContentFile(FileInfo fileInfo)
+        private static bool IsTemplateContentFile(FileInfo fileInfo)
         {
             return fileInfo.FullName.EndsWith(".md");
-        }
-
-        private FileInfo _File = null;
-        public FileInfo File
-        {
-            get
-            {
-                if(_File == null)
-                {
-                    foreach(var fileInfo in Directory.EnumerateFiles("*.md"))
-                    {
-                        if(IsTemplateContentFile(fileInfo))
-                        {
-                            _File = fileInfo;
-                        }
-                    }
-                }
-
-                return _File;
-            }
         }
 
         public string MdContent
         {
             get
             {
-                return System.IO.File.ReadAllText(File.FullName);
+                return Context.GetLogic<Storage>().LoadByStorageId(StorageId);
             }
         }
+
 
         public string Url 
         { 
             get
             {
-                return Directory.Parent.Parent.Name + "\\" + Directory.Parent.Name + "\\" + Directory.Name + "\\" + File.Name + ".html";
+                var urlFolderStack = BlogGenerator.BuildFolderStack(this);
+                urlFolderStack.Add(Name + ".html");
+                var x = string.Join("\\", urlFolderStack);
+                return x;
+                // return Directory.Parent.Parent.Name + "\\" + Directory.Parent.Name + "\\" + Directory.Name + "\\" + ;
             }
         }
         

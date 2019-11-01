@@ -1,5 +1,6 @@
 // Pavel Prchal, 2019
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using fruitfly.objects;
@@ -15,10 +16,10 @@ namespace fruitfly.core
                 Path.Combine(Context.Config.rootDir, Global.TEMPLATES, Context.Config.template, templateName));
         }
 
-        public void WriteContent(List<string> folderStack, string name, string content)
+        public void WriteContent(List<string> folderStack, string name, RenderedFormats format, string content)
         {
             File.WriteAllText(
-                CreateFullPath(folderStack, name),
+                CreateFullPath(folderStack, name, format),
                 content
             );
         }
@@ -48,7 +49,7 @@ namespace fruitfly.core
             return blog;
         }
 
-        private string CreateFullPath(List<string> folderStack, string name)
+        private string CreateFullPath(List<string> folderStack, string name, RenderedFormats format)
         {
             var outDirName = Path.Combine(
                 Context.Config.rootDir,
@@ -61,7 +62,12 @@ namespace fruitfly.core
                 Directory.CreateDirectory(outDirName);
             }
             
-            return Path.Combine(outDirName, name);
+            return Path.Combine(outDirName, $"{name}.{format.ToString()}");
+        }
+
+        public string LoadByStorageId(string storageId)
+        {
+            return System.IO.File.ReadAllText(storageId);
         }
     }
 }

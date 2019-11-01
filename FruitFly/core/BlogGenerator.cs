@@ -24,6 +24,7 @@ namespace fruitfly.core
             Context.GetLogic<Storage>().WriteContent(
                 folderStack: BuildFolderStack(blog),
                 name: Global.TEMPLATE_INDEX, 
+                format: RenderedFormats.html,
                 content: Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_INDEX, blog)
             );
         }
@@ -34,13 +35,13 @@ namespace fruitfly.core
             {
                 Context.GetLogic<Storage>().WriteContent(
                     folderStack: BuildFolderStack(post),
-                    name: post.File.Name + ".html", 
+                    name: post.Name,
+                    format: RenderedFormats.html, 
                     content: Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_POST, post)
                 );
             }
         }
-
-        private List<string> BuildFolderStack(AbstractContentObject contentObject)
+        public static List<string> BuildFolderStack(AbstractContentObject contentObject)
         {
             if(contentObject is Blog)
             {

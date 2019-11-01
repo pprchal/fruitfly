@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using fruitfly.core;
-using fruitfly.objects;
 
 namespace FruitFly.Tests
 {
@@ -12,10 +11,10 @@ namespace FruitFly.Tests
         [Test]
         public void CanRenderPostTile()
         {
-            var blog = ctx.GetLogic<BlogScanner>().Scan();
-            var html = ctx.GetLogic<HtmlRenderer>().Render(
-                blog.Posts[0],
-                Templates.PostTile
+            var blog = ctx.GetLogic<Storage>().Scan();
+            var html = ctx.GetLogic<HtmlRenderer>().RenderTemplate(
+                Global.TEMPLATE_POST,
+                blog.Posts[0]
             ).ToString();
         }
     }
