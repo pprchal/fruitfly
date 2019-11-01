@@ -11,7 +11,7 @@ namespace fruitfly.core
         public Blog GenerateBlog(string[] args)
         {
             Context.Console.WriteLine("~o~ FRUITFLY 1.0 Blog generator");
-            var blog = Context.GetLogic<BlogScanner>().Scan();
+            var blog = Context.GetLogic<Storage>().Scan();
             GenerateBlogPostsFiles(blog);
             GenerateBlogIndexFile(blog);
             var seconds = new TimeSpan(DateTime.Now.Ticks - Context.StartTime.Ticks).TotalSeconds;
