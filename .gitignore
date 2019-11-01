@@ -1,5 +1,6 @@
 .vs/
 obj/
 bin/
-blog_input/
-blog_output/
+/FruitFly/blog_input/
+/FruitFly/blog_output/
+/FruitFly.Tests/obj
