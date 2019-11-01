@@ -1,6 +1,7 @@
 // Pavel Prchal, 2019
 
 using System;
+using System.Collections.Generic;
 using fruitfly.objects;
 
 namespace fruitfly.core
@@ -20,10 +21,9 @@ namespace fruitfly.core
 
         private void GenerateBlogIndexFile(Blog blog)
         {
-            // should be something like: put content into this abstract folder
-            // by template is strange
             Context.GetLogic<Storage>().WriteContent(
-                template: Templates.Index, 
+                folderStack: BuildFolderStack(blog),
+                name: Global.TEMPLATE_INDEX, 
                 content: Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_INDEX, blog)
             );
         }
@@ -33,11 +33,27 @@ namespace fruitfly.core
             foreach(var post in blog.Posts)
             {
                 Context.GetLogic<Storage>().WriteContent(
-                    template: Templates.Post, 
-                    content: Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_POST, post), 
-                    post: post
+                    folderStack: BuildFolderStack(post),
+                    name: post.File.Name + ".html", 
+                    content: Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_POST, post)
                 );
             }
+        }
+
+        private List<string> BuildFolderStack(AbstractContentObject contentObject)
+        {
+            if(contentObject is Blog)
+            {
+                return new List<string>();
+            }
+
+            var post = contentObject as Post;
+            return new List<string>()
+            {
+                $"y{post.Created.Year}",
+                $"m{post.Created.Month}",
+                $"d{post.Created.Day}_post{post.Number}"
+            };
         }
     }
 }

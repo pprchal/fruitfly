@@ -1,6 +1,5 @@
 // Pavel Prchal, 2019
 
-using System;
 using fruitfly.objects;
 
 namespace fruitfly.core

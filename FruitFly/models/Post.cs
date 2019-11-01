@@ -43,7 +43,6 @@ namespace fruitfly.objects
             set;
         }
 
-        public int Day;
         public int Number;
         private static Regex TemplateRe = new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
