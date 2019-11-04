@@ -16,7 +16,13 @@ namespace fruitfly.core
         
         public const string CONFIG_YML = "config.yml";
 
-        public const string VAR_NAME_CONFIG = "config";
+        public const string SCOPE_NAME_CONFIG = "config";
+
+        public const string SCOPE_NAME_TEMPLATE = "templates";
+
+        public const string SCOPE_NAME_BLOG = "blog";
+
+
         public const string VAR_NAME_CONTENT = "content";
 
         // blog:posts
@@ -29,7 +35,7 @@ namespace fruitfly.core
         public const string VAR_NAME_POST_CONTENT = "content";
 
 
-        public const string TEMPLATE = "template";
+
 
     }
 }
