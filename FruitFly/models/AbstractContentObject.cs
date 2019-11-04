@@ -15,6 +15,14 @@ namespace fruitfly.objects
             Parent = parent;
         }
 
+        protected virtual string HandleTemplate(Variable variable)
+        {
+            return Context.GetLogic<VariableBinder>().Bind(
+                Context.GetLogic<Storage>().LoadTemplate(variable.Name),
+                this
+            ).ToString();
+        }
+
         public AbstractContentObject Parent
         {
             get;
