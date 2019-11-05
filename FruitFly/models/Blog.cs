@@ -19,10 +19,13 @@ namespace fruitfly.objects
 
         public override string GetVariableValue(Variable variable) => variable switch
         {
-            { Scope: "config" } => (Context.Config as IVariableSource).GetVariableValue(variable),
-            { Scope: "blog", Name: Global.VAR_NAME_INDEX_POSTS } => RenderPostTiles(),
+            { Scope: Global.SCOPE_NAME_TEMPLATE } => HandleTemplate(variable), 
+            { Scope: Global.SCOPE_NAME_CONFIG } => (Context.Config as IVariableSource).GetVariableValue(variable),
+            { Scope: Global.SCOPE_NAME_BLOG, Name: Global.VAR_NAME_INDEX_POSTS } => RenderPostTiles(),
             _ => throw new System.Exception($"GetVariableValue {variable.ReplaceBlock}")
         };
+
+
 
         private string RenderPostTiles()
         {

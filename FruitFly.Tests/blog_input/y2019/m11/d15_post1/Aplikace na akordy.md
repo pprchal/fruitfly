@@ -1,5 +1,7 @@
 # Aplikace na akordy
 
+:)
+
 Protože jsem nemohl pochopit akordy, napsal jsem si na ně malou aplikaci.
 
 Je určitě další z mnoha, ale můžete si ji stáhnout z githubu. 
