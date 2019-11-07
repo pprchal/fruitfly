@@ -1,24 +1,18 @@
 // Pavel Prchal, 2019
 
-using System.Collections.Generic;
 using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public class Template : AbstractContentObject
+    public class Template : AbstractTemplate
     {
-        public Template(Context context, AbstractContentObject parent) : base(context, parent)
+        private readonly string _TemplateName;
+
+        public Template(Context context, AbstractTemplate parent, string templateName) : base(context, parent)
         {
+            _TemplateName = templateName;
         }
 
-        public override List<string> BuildFolderStack()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override string GetVariableValue(Variable variable) 
-        {
-            return Parent.GetVariableValue(variable);
-        }
+        public override string TemplateName => _TemplateName;
     }
 }

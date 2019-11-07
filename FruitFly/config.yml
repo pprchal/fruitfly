@@ -8,8 +8,6 @@ language: cs_CZ
 title: blog - Pavel Prchal
 
 # optional
-rootDir: c:\Users\Pavel\Documents\fruitfly\FruitFly
-
-
-#home
-home: http://pavel.borec.cz
+#rootDir: z:\Shared\fruitfly\FruitFly
+rootDir: c:\Data\Shared\fruitfly\FruitFly\
+#rootDir: c:\Data\Shared\fruitfly\FruitFly

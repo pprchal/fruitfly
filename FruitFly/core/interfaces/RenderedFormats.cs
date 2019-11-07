@@ -4,6 +4,6 @@ namespace fruitfly.core
 {
     public enum RenderedFormats
     {
-        html
+        Html
     }
 }

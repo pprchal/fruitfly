@@ -23,6 +23,9 @@ namespace fruitfly.core
         public const string SCOPE_NAME_BLOG = "blog";
 
 
+        public const string MORPH_TILE = "tile";
+
+
         public const string VAR_NAME_CONTENT = "content";
 
         // blog:posts
