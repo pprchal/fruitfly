@@ -65,7 +65,9 @@ namespace fruitfly.objects
         {
             if(morph == Global.MORPH_TILE)
             {
-                return $"MORPH- tile: {Number} -- {Title}";
+                var x = Context.GetLogic<Storage>().LoadTemplate("postTile.html");
+                x = Context.GetLogic<VariableBinder>().Bind(x,  this).ToString();
+                return x;
             }
             return base.Render(renderedFormats, morph);
         }
