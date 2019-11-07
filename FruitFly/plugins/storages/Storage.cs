@@ -36,7 +36,7 @@ namespace fruitfly.core
         {
             get
             {
-                return Path.Combine(Context.Config.workDir, Global.BLOG_OUTPUT);
+                return Path.Combine(Context.Config.workDir);
             }
         }
 

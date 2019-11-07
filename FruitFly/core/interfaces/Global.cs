@@ -5,7 +5,6 @@ namespace fruitfly.core
     public class Global
     {
         public const string BLOG_INPUT = "blog_input";
-        public const string BLOG_OUTPUT ="blog_output";
         public const string TEMPLATES = "templates";
 
 
