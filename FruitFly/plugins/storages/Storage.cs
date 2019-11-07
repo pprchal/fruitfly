@@ -16,9 +16,33 @@ namespace fruitfly.core
             return File.ReadAllText(GetFullTemplateName(templateName));
         }
 
+        private string TEMPLATES_ROOT
+        {
+            get
+            {
+                return Path.Combine(Context.Config.rootDir, Global.TEMPLATES);
+            }
+        }
+
+        private string BLOG_INPUT_ROOT
+        {
+            get
+            {
+                return Path.Combine(Context.Config.workDir, Global.BLOG_INPUT);
+            }
+        }
+
+        private string BLOG_OUTPUT_ROOT
+        {
+            get
+            {
+                return Path.Combine(Context.Config.workDir, Global.BLOG_OUTPUT);
+            }
+        }
+
         private string GetFullTemplateName(string templateName)
         {
-            return Path.Combine(Context.Config.rootDir, Global.TEMPLATES, Context.Config.template, templateName);
+            return Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
         }
 
         public void WriteContent(List<string> folderStack, string name, string content)
@@ -31,10 +55,7 @@ namespace fruitfly.core
 
         public Blog Scan()
         {
-            return Scan(Context.Config.rootDir == null ?
-                Global.BLOG_INPUT :
-                Path.Combine(Context.Config.rootDir, Global.BLOG_INPUT)
-            );
+            return Scan(BLOG_INPUT_ROOT);
         }
 
         private Blog Scan(string rootDir)
@@ -57,8 +78,7 @@ namespace fruitfly.core
         private string CreateFullPath(List<string> folderStack, string name)
         {
             var outDirName = Path.Combine(
-                Context.Config.rootDir,
-                Global.BLOG_OUTPUT,
+                BLOG_OUTPUT_ROOT,
                 Path.Combine(folderStack.ToArray())
             );
 
@@ -72,14 +92,13 @@ namespace fruitfly.core
 
         public string LoadContentByStorageId(string storageId)
         {
-            return System.IO.File.ReadAllText(storageId);
+            return File.ReadAllText(storageId);
         }
 
         private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         private static Post TryParsePost(Context context, Blog blog, string contentDir)
         {
-
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
             {

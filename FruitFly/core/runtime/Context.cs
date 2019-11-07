@@ -37,7 +37,7 @@ namespace fruitfly.core
         {
             get;
         } = DateTime.Now;
-
+        
         private Dictionary<Type, AbstractLogic> Singletons = new Dictionary<Type, AbstractLogic>();
         public virtual T GetLogic<T>() where T : AbstractLogic, new()
         {
