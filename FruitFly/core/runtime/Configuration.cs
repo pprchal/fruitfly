@@ -8,7 +8,7 @@ namespace fruitfly.objects
     [Serializable]
     public class Configuration : IVariableSource
     {
-        public string rootDir
+        public string templateDir
         {
             get;
             set;

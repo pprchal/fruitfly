@@ -20,7 +20,7 @@ namespace fruitfly.core
         {
             get
             {
-                return Path.Combine(Context.Config.rootDir, Global.TEMPLATES);
+                return Path.Combine(Context.Config.templateDir, Global.TEMPLATES);
             }
         }
 
@@ -82,7 +82,7 @@ namespace fruitfly.core
                 Path.Combine(folderStack.ToArray())
             );
 
-            if(Context.Config.rootDir != "" && !Directory.Exists(outDirName))
+            if(!Directory.Exists(outDirName))
             {
                 Directory.CreateDirectory(outDirName);
             }

@@ -1,12 +1,14 @@
-# optional
+# optional - i do not provide other templates
 # template: default
 
 # required
 language: cs_CZ
 
-
+# your title in blog
 title: blog - Pavel Prchal
 
-# optional
-rootDir: c:\Users\Pavel\Documents\fruitfly\FruitFly\
+# optional - otherwise is templateDir taken from program directory
+templateDir: c:\Users\Pavel\Documents\fruitfly\FruitFly\
+
+# look for blog_input here and write output
 workDir: c:\Users\Pavel\Desktop\pavel.borec.cz\
