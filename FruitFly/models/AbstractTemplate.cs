@@ -44,6 +44,15 @@ namespace fruitfly.objects
 
         public virtual string GetVariableValue(Variable variable)
         {
+            if(variable.Scope == Global.SCOPE_NAME_CONFIG)
+            {
+                return (Context.Config as IVariableSource).GetVariableValue(variable);
+            }
+            else if(variable.Scope == Global.SCOPE_NAME_TEMPLATE)
+            {
+                return RenderNestedTemplateByVariable(variable);
+            }
+
             if(Parent != null)
             {
                 return Parent.GetVariableValue(variable);

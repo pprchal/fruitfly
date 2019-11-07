@@ -19,13 +19,20 @@ namespace fruitfly.objects
             get;
         } = new List<Post>();
 
-        public override string GetVariableValue(Variable variable) => variable switch
+        public override string GetVariableValue(Variable variable)
         {
-            { Scope: Global.SCOPE_NAME_TEMPLATE } => RenderNestedTemplateByVariable(variable), 
-            { Scope: Global.SCOPE_NAME_CONFIG } => (Context.Config as IVariableSource).GetVariableValue(variable),
-            { Scope: Global.SCOPE_NAME_BLOG, Name: Global.VAR_NAME_INDEX_POSTS } => RenderPostTiles(),
-            _ => throw new System.Exception($"GetVariableValue {variable.ReplaceBlock}")
-        };
+            if(variable.Scope == Global.SCOPE_NAME_BLOG && variable.Name == Global.VAR_NAME_INDEX_POSTS)
+            {
+                return RenderPostTiles();
+            }
+
+            if(Parent != null)
+            {
+                return Parent.GetVariableValue(variable);
+            }
+
+            return base.GetVariableValue(variable);
+        }
 
         private string RenderPostTiles()
         {

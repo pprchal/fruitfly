@@ -18,7 +18,7 @@ namespace fruitfly.core
 
         public const string SCOPE_NAME_CONFIG = "config";
 
-        public const string SCOPE_NAME_TEMPLATE = "templates";
+        public const string SCOPE_NAME_TEMPLATE = "template";
 
         public const string SCOPE_NAME_BLOG = "blog";
 
