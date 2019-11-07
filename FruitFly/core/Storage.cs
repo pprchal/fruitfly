@@ -35,6 +35,10 @@ namespace fruitfly.core
 
         private Blog Scan(string rootDir)
         {
+            if(!Directory.Exists(rootDir))
+            {
+                throw new Exception($"~o~ Directory: {rootDir} does not exists, check your [config.yml]");
+            }
             var blog = new Blog(Context, null);
 
             foreach(var directory in Directory.EnumerateDirectories(rootDir, "*.*", SearchOption.AllDirectories))
