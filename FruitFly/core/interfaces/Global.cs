@@ -5,7 +5,6 @@ namespace fruitfly.core
     public class Global
     {
         public const string BLOG_INPUT = "blog_input";
-        public const string BLOG_OUTPUT ="blog_output";
         public const string TEMPLATES = "templates";
 
 
@@ -18,9 +17,12 @@ namespace fruitfly.core
 
         public const string SCOPE_NAME_CONFIG = "config";
 
-        public const string SCOPE_NAME_TEMPLATE = "templates";
+        public const string SCOPE_NAME_TEMPLATE = "template";
 
         public const string SCOPE_NAME_BLOG = "blog";
+
+
+        public const string MORPH_TILE = "tile";
 
 
         public const string VAR_NAME_CONTENT = "content";

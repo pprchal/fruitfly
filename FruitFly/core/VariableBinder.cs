@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace fruitfly.core
 {
-    public class VariableBinder : BaseLogic
+    public class VariableBinder : AbstractLogic
     {
         static Regex VariableRegex => new Regex("\\{([\\w\\d]+):([\\w\\.\\d]+)\\}", RegexOptions.Compiled);
 
@@ -14,7 +14,7 @@ namespace fruitfly.core
         {
             var sb = new StringBuilder(content);
 
-            foreach (var variable in FindVariables(content))
+            foreach (var variable in FindVariablesInContent(content))
             {
                 sb.Replace(
                     variable.ReplaceBlock,
@@ -25,7 +25,7 @@ namespace fruitfly.core
             return sb;
         }
 
-        private List<Variable> FindVariables(string content)
+        private List<Variable> FindVariablesInContent(string content)
         {
             var variables = new List<Variable>();
             foreach (Match match in VariableRegex.Matches(content))

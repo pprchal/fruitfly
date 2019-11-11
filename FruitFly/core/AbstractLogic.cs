@@ -2,7 +2,7 @@
 
 namespace fruitfly.core
 {
-    public abstract class BaseLogic
+    public abstract class AbstractLogic
     {
         public Context Context { get; set; }
     }

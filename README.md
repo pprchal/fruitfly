@@ -1,5 +1,7 @@
 # fruitfly
 
+Look into `FruitFly/Readme` for more info.
+
 Bare-bone minimalistic static blogging
 Designed to be modular and... ~o~
 

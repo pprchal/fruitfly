@@ -37,9 +37,9 @@ namespace fruitfly.core
         {
             get;
         } = DateTime.Now;
-
-        private Dictionary<Type, BaseLogic> Singletons = new Dictionary<Type, BaseLogic>();
-        public virtual T GetLogic<T>() where T : BaseLogic, new()
+        
+        private Dictionary<Type, AbstractLogic> Singletons = new Dictionary<Type, AbstractLogic>();
+        public virtual T GetLogic<T>() where T : AbstractLogic, new()
         {
             var type = typeof(T);
 

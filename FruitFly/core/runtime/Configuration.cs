@@ -8,12 +8,18 @@ namespace fruitfly.objects
     [Serializable]
     public class Configuration : IVariableSource
     {
-        public string rootDir
+        public string templateDir
         {
             get;
             set;
         } = "";
 
+        public string workDir
+        {
+            get;
+            set;
+        }
+        
         public string language
         {
             get;
@@ -40,7 +46,7 @@ namespace fruitfly.objects
 
         public string fullVersion
         {
-            get => "1.0 preview";
+            get => "5.0";
         }
 
         string IVariableSource.GetVariableValue(Variable variable)

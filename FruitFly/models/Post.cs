@@ -7,12 +7,14 @@ using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public class Post : AbstractContentObject
+    public class Post : AbstractTemplate
     {
-        public Post(Context context, AbstractContentObject parent) : base(context, parent)
+        public Post(Context context, AbstractTemplate parent) : base(context, parent)
         {
         }
 
+        public override string TemplateName => Global.TEMPLATE_POST;
+        
         public string Name
         {
             get;
@@ -55,8 +57,20 @@ namespace fruitfly.objects
         {
             get
             {
-                return Context.GetLogic<Storage>().LoadByStorageId(StorageId);
+                return Context.GetLogic<Storage>().LoadContentByStorageId(StorageId);
             }
+        }
+
+        public override string Render(RenderedFormats renderedFormats, string morph = null)
+        {
+            if(morph == Global.MORPH_TILE)
+            {
+                return Context.GetLogic<VariableBinder>().Bind(
+                    Context.GetLogic<Storage>().LoadTemplate("postTile.html"),
+                    this
+                ).ToString();
+            }
+            return base.Render(renderedFormats, morph);
         }
 
         public override List<string> BuildFolderStack()

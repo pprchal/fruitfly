@@ -1,7 +1,5 @@
 // Pavel Prchal, 2019
 
-
-using System;
 using System.Text.RegularExpressions;
 
 namespace fruitfly.core

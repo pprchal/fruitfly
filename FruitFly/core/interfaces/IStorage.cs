@@ -9,9 +9,9 @@ namespace fruitfly.core
     {
         string LoadTemplate(string templateName);
 
-        void WriteContent(List<string> folderStack, string name, RenderedFormats formats, string content);
+        void WriteContent(List<string> folderStack, string name, string content);
 
-        string LoadByStorageId(string storageId);
+        string LoadContentByStorageId(string storageId);
 
         Blog Scan(); 
     }

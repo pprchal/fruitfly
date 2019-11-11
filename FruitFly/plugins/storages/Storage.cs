@@ -9,28 +9,53 @@ using fruitfly.objects;
 namespace fruitfly.core
 {
     // Filesystem storage
-    public class Storage : BaseLogic, IStorage
+    public class Storage : AbstractLogic, IStorage
     {
         public string LoadTemplate(string templateName)
         {
-            return File.ReadAllText(
-                Path.Combine(Context.Config.rootDir, Global.TEMPLATES, Context.Config.template, templateName));
+            return File.ReadAllText(GetFullTemplateName(templateName));
         }
 
-        public void WriteContent(List<string> folderStack, string name, RenderedFormats format, string content)
+        private string TEMPLATES_ROOT
+        {
+            get
+            {
+                return Path.Combine(Context.Config.templateDir, Global.TEMPLATES);
+            }
+        }
+
+        private string BLOG_INPUT_ROOT
+        {
+            get
+            {
+                return Path.Combine(Context.Config.workDir, Global.BLOG_INPUT);
+            }
+        }
+
+        private string BLOG_OUTPUT_ROOT
+        {
+            get
+            {
+                return Path.Combine(Context.Config.workDir);
+            }
+        }
+
+        private string GetFullTemplateName(string templateName)
+        {
+            return Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
+        }
+
+        public void WriteContent(List<string> folderStack, string name, string content)
         {
             File.WriteAllText(
-                CreateFullPath(folderStack, name, format),
+                CreateFullPath(folderStack, name),
                 content
             );
         }
 
         public Blog Scan()
         {
-            return Scan(Context.Config.rootDir == null ?
-                Global.BLOG_INPUT :
-                Path.Combine(Context.Config.rootDir, Global.BLOG_INPUT)
-            );
+            return Scan(BLOG_INPUT_ROOT);
         }
 
         private Blog Scan(string rootDir)
@@ -50,32 +75,30 @@ namespace fruitfly.core
             return blog;
         }
 
-        private string CreateFullPath(List<string> folderStack, string name, RenderedFormats format)
+        private string CreateFullPath(List<string> folderStack, string name)
         {
             var outDirName = Path.Combine(
-                Context.Config.rootDir,
-                Global.BLOG_OUTPUT,
+                BLOG_OUTPUT_ROOT,
                 Path.Combine(folderStack.ToArray())
             );
 
-            if(Context.Config.rootDir != "" && !Directory.Exists(outDirName))
+            if(!Directory.Exists(outDirName))
             {
                 Directory.CreateDirectory(outDirName);
             }
             
-            return Path.Combine(outDirName, $"{name}.{format.ToString()}");
+            return Path.Combine(outDirName, $"{name}");
         }
 
-        public string LoadByStorageId(string storageId)
+        public string LoadContentByStorageId(string storageId)
         {
-            return System.IO.File.ReadAllText(storageId);
+            return File.ReadAllText(storageId);
         }
 
         private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         private static Post TryParsePost(Context context, Blog blog, string contentDir)
         {
-
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
             {

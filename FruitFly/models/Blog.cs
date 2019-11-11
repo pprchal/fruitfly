@@ -6,40 +6,42 @@ using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public class Blog : AbstractContentObject
+    public class Blog : AbstractTemplate
     {
-        public Blog(Context context, AbstractContentObject parent) : base(context, parent)
+        public Blog(Context context, AbstractTemplate parent) : base(context, parent)
         {
         }
+
+        public override string TemplateName => Global.TEMPLATE_INDEX;
 
         public List<Post> Posts
         {
             get;
         } = new List<Post>();
 
-        public override string GetVariableValue(Variable variable) => variable switch
+        public override string GetVariableValue(Variable variable)
         {
-            { Scope: Global.SCOPE_NAME_TEMPLATE } => HandleTemplate(variable), 
-            { Scope: Global.SCOPE_NAME_CONFIG } => (Context.Config as IVariableSource).GetVariableValue(variable),
-            { Scope: Global.SCOPE_NAME_BLOG, Name: Global.VAR_NAME_INDEX_POSTS } => RenderPostTiles(),
-            _ => throw new System.Exception($"GetVariableValue {variable.ReplaceBlock}")
-        };
+            if(variable.Scope == Global.SCOPE_NAME_BLOG && variable.Name == Global.VAR_NAME_INDEX_POSTS)
+            {
+                return RenderPostTiles();
+            }
 
+            if(Parent != null)
+            {
+                return Parent.GetVariableValue(variable);
+            }
 
+            return base.GetVariableValue(variable);
+        }
 
         private string RenderPostTiles()
         {
             var sb = new StringBuilder();
             foreach (var post in Posts)
             {
-                sb.Append(Context.GetLogic<HtmlRenderer>().RenderTemplate(Global.TEMPLATE_POST_TILE, post));
+                sb.Append(post.Render(RenderedFormats.Html, Global.MORPH_TILE));
             }
             return sb.ToString();
         }
-
-        public override List<string> BuildFolderStack()
-        {
-            return new List<string>();
-        }        
     }
 }
