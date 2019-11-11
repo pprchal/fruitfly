@@ -46,4 +46,5 @@ Is very clear. I'm too lazy.
 
 * better documentation
 * better distribution
-* better
+* better....
+* high-async support - as test project
