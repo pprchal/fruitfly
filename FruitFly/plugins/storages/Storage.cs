@@ -1,6 +1,7 @@
 // Pavel Prchal, 2019
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -11,39 +12,15 @@ namespace fruitfly.core
     // Filesystem storage
     public class Storage : AbstractLogic, IStorage
     {
-        public string LoadTemplate(string templateName)
-        {
-            return File.ReadAllText(GetFullTemplateName(templateName));
-        }
+        public string LoadTemplate(string templateName) => File.ReadAllText(GetFullTemplateName(templateName));
 
-        private string TEMPLATES_ROOT
-        {
-            get
-            {
-                return Path.Combine(Context.Config.templateDir, Global.TEMPLATES);
-            }
-        }
+        private string TEMPLATES_ROOT => Path.Combine(Context.Config.templateDir, Global.TEMPLATES);
 
-        private string BLOG_INPUT_ROOT
-        {
-            get
-            {
-                return Path.Combine(Context.Config.workDir, Global.BLOG_INPUT);
-            }
-        }
+        private string BLOG_INPUT_ROOT => Path.Combine(Context.Config.workDir, Global.BLOG_INPUT);
 
-        private string BLOG_OUTPUT_ROOT
-        {
-            get
-            {
-                return Path.Combine(Context.Config.workDir);
-            }
-        }
+        private string BLOG_OUTPUT_ROOT => Path.Combine(Context.Config.workDir);
 
-        private string GetFullTemplateName(string templateName)
-        {
-            return Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
-        }
+        private string GetFullTemplateName(string templateName) => Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
 
         public void WriteContent(List<string> folderStack, string name, string content)
         {
@@ -72,6 +49,7 @@ namespace fruitfly.core
                 }
             }
 
+            blog.Posts.Sort((a, b) => b.Created.CompareTo(a.Created));
             return blog;
         }
 
@@ -90,12 +68,9 @@ namespace fruitfly.core
             return Path.Combine(outDirName, $"{name}");
         }
 
-        public string LoadContentByStorageId(string storageId)
-        {
-            return File.ReadAllText(storageId);
-        }
+        public string LoadContentByStorageId(string storageId) => File.ReadAllText(storageId);
 
-        private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
+        private static Regex TemplateRe = new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         private static Post TryParsePost(Context context, Blog blog, string contentDir)
         {

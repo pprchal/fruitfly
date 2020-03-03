@@ -53,13 +53,7 @@ namespace fruitfly.objects
             set;
         }
 
-        public string MdContent
-        {
-            get
-            {
-                return Context.GetLogic<Storage>().LoadContentByStorageId(StorageId);
-            }
-        }
+        public string MdContent => Context.GetLogic<Storage>().LoadContentByStorageId(StorageId);
 
         public override string Render(RenderedFormats renderedFormats, string morph = null)
         {
@@ -118,10 +112,7 @@ namespace fruitfly.objects
             }
         }
 
-        private string ToLocaleDate(DateTime date)
-        {
-            return date.ToString("d", Culture);
-        }
+        private string ToLocaleDate(DateTime date) => date.ToString("d", Culture);
 
         private IMdConverter MdConverter
         {
