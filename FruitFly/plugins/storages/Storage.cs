@@ -67,12 +67,11 @@ namespace fruitfly.core
             return Path.Combine(outDirName, $"{name}");
         }
 
-        public string LoadContentByStorageId(string storageId)
-        {
-            return File.ReadAllText(storageId);
-        }
+        public string LoadContentByStorageId(string storageId) =>
+            File.ReadAllText(storageId);
 
-        private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
+        private static Regex TemplateRe =
+            new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         private static Post TryParsePost(Blog blog, string contentDir)
         {
@@ -103,9 +102,7 @@ namespace fruitfly.core
             return null;
         }     
 
-        private static bool IsTemplateContentFile(FileInfo fileInfo)
-        {
-            return fileInfo.FullName.EndsWith(".md");
-        }      
+        private static bool IsTemplateContentFile(FileInfo fileInfo) =>
+            fileInfo.FullName.EndsWith(".md");
     }
 }

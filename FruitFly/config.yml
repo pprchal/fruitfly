@@ -8,7 +8,7 @@ language: cs_CZ
 title: blog - Pavel Prchal
 
 # optional - otherwise is templateDir taken from program directory
-templateDir: c:\Users\Pavel\Documents\fruitfly\FruitFly\
+templateDir: C:\Users\Pavel\Desktop\fruitfly\FruitFly.Tests
 
 # look for blog_input here and write output
-workDir: c:\Users\Pavel\Disk Google\pavel.borec.cz\
+workDir: C:\Users\Pavel\Desktop\fruitfly\FruitFly.Tests
