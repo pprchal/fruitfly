@@ -11,60 +11,37 @@ namespace fruitfly.core
     // Filesystem storage
     public class Storage : AbstractLogic, IStorage
     {
-        public string LoadTemplate(string templateName)
-        {
-            return File.ReadAllText(GetFullTemplateName(templateName));
-        }
+        public string LoadTemplate(string templateName) =>
+            File.ReadAllText(GetFullTemplateName(templateName));
 
-        private string TEMPLATES_ROOT
-        {
-            get
-            {
-                return Path.Combine(Context.Config.templateDir, Global.TEMPLATES);
-            }
-        }
+        private string TEMPLATES_ROOT =>
+            Path.Combine(Context.Current.Config.templateDir, Global.TEMPLATES);
 
-        private string BLOG_INPUT_ROOT
-        {
-            get
-            {
-                return Path.Combine(Context.Config.workDir, Global.BLOG_INPUT);
-            }
-        }
+        private string BLOG_INPUT_ROOT =>
+            Path.Combine(Context.Current.Config.workDir, Global.BLOG_INPUT);
 
-        private string BLOG_OUTPUT_ROOT
-        {
-            get
-            {
-                return Path.Combine(Context.Config.workDir);
-            }
-        }
+        private string BLOG_OUTPUT_ROOT =>
+            Path.Combine(Context.Current.Config.workDir);
 
-        private string GetFullTemplateName(string templateName)
-        {
-            return Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
-        }
+        private string GetFullTemplateName(string templateName) =>
+            Path.Combine(TEMPLATES_ROOT, Context.Current.Config.template, templateName);
 
-        public void WriteContent(List<string> folderStack, string name, string content)
-        {
+        public void WriteContent(List<string> folderStack, string name, string content) =>
             File.WriteAllText(
                 CreateFullPath(folderStack, name),
                 content
             );
-        }
 
-        public Blog Scan()
-        {
-            return Scan(BLOG_INPUT_ROOT);
-        }
+        public Blog Scan() =>
+            Scan(BLOG_INPUT_ROOT);
 
         private Blog Scan(string rootDir)
         {
-            var blog = new Blog(Context, null);
+            var blog = new Blog();
 
             foreach(var directory in Directory.EnumerateDirectories(rootDir, "*.*", SearchOption.AllDirectories))
             {
-                var post = TryParsePost(Context, blog, directory);
+                var post = TryParsePost(blog, directory);
                 if(post != null)
                 {
                     System.Console.Out.WriteLine($"\t~o~ {directory}");
@@ -97,7 +74,7 @@ namespace fruitfly.core
 
         private static Regex TemplateRe => new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
-        private static Post TryParsePost(Context context, Blog blog, string contentDir)
+        private static Post TryParsePost(Blog blog, string contentDir)
         {
             var m = TemplateRe.Match(contentDir);
             if(m.Success)
@@ -107,7 +84,7 @@ namespace fruitfly.core
                 {
                     if(IsTemplateContentFile(fileInfo))
                     {
-                        return new Post(context, blog)
+                        return new Post(blog)
                         {
                             Name = fileInfo.Name,
                             Title = fileInfo.Name.Substring(0, fileInfo.Name.Length - ".md".Length),

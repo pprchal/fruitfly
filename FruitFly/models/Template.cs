@@ -1,14 +1,12 @@
 // Pavel Prchal, 2019
 
-using fruitfly.core;
-
 namespace fruitfly.objects
 {
     public class Template : AbstractTemplate
     {
         private readonly string _TemplateName;
 
-        public Template(Context context, AbstractTemplate parent, string templateName) : base(context, parent)
+        public Template(AbstractTemplate parent, string templateName) : base(parent)
         {
             _TemplateName = templateName;
         }

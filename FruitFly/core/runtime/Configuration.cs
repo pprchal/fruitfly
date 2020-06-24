@@ -44,14 +44,17 @@ namespace fruitfly.objects
             set;
         } = "default";
 
-        public string fullVersion
-        {
-            get => "5.0";
-        }
+        public string fullVersion =>
+            "5.0";
 
-        string IVariableSource.GetVariableValue(Variable variable)
-        {
-            return GetType().InvokeMember(variable.Name, System.Reflection.BindingFlags.GetProperty, null, this, null) as string;
-        }
+        string IVariableSource.GetVariableValue(Variable variable) =>
+            GetType()
+            .InvokeMember(
+                name: variable.Name,
+                invokeAttr: System.Reflection.BindingFlags.GetProperty, 
+                binder: null, 
+                target: this, 
+                args: null
+            ) as string;
     }
 }

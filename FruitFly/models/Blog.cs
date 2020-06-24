@@ -8,11 +8,12 @@ namespace fruitfly.objects
 {
     public class Blog : AbstractTemplate
     {
-        public Blog(Context context, AbstractTemplate parent) : base(context, parent)
+        public Blog() : base(null)
         {
         }
 
-        public override string TemplateName => Global.TEMPLATE_INDEX;
+        public override string TemplateName => 
+            Global.TEMPLATE_INDEX;
 
         public List<Post> Posts
         {

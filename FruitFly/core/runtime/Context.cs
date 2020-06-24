@@ -8,16 +8,19 @@ using YamlDotNet.Serialization;
 
 namespace fruitfly.core
 {
-    public class Context : IContext
+    public class Context
     {
-        public Context()
-        {
-        }
+        public static Context Current = new Context();
 
         public IConsole Console
         {
             get;
         } = new Console();
+
+        public IMdConverter MdConverter
+        {
+            get;
+        } = new MarkdigHtmlConverter();
 
         Configuration _Configuration = null;
         public Configuration Config
@@ -26,7 +29,7 @@ namespace fruitfly.core
             {
                 if(_Configuration == null)
                 {
-                    _Configuration = (this as IContext).CreateConfig();
+                    _Configuration = CreateConfig();
                 }
 
                 return _Configuration;
@@ -39,28 +42,28 @@ namespace fruitfly.core
         } = DateTime.Now;
         
         private Dictionary<Type, AbstractLogic> Singletons = new Dictionary<Type, AbstractLogic>();
-        public virtual T GetLogic<T>() where T : AbstractLogic, new()
+
+        private T GetLogicInternal<T>() where T : AbstractLogic, new()
         {
             var type = typeof(T);
 
             if(!Singletons.ContainsKey(type))
             {
-                Singletons.Add(type, new T() { Context = this });
+                Singletons.Add(type, new T());
             }
 
             return Singletons[type] as T;
         }
 
-        protected virtual Configuration CreateYamlConfig(TextReader yamlReader)
-        {
-            return new DeserializerBuilder()
+        public static T GetLogic<T>() where T : AbstractLogic, new() =>
+            Current.GetLogicInternal<T>();
+
+        protected Configuration CreateYamlConfig(TextReader yamlReader) =>
+            new DeserializerBuilder()
                 .Build()
                 .Deserialize<Configuration>(yamlReader);
-        }
 
-        public virtual Configuration CreateConfig()
-        {
-            return CreateYamlConfig(new StringReader(File.ReadAllText(Global.CONFIG_YML)));
-        }
+        public virtual Configuration CreateConfig() =>
+            CreateYamlConfig(new StringReader(File.ReadAllText(Global.CONFIG_YML)));
     }
 }

@@ -9,11 +9,12 @@ namespace fruitfly.objects
 {
     public class Post : AbstractTemplate
     {
-        public Post(Context context, AbstractTemplate parent) : base(context, parent)
+        public Post(AbstractTemplate parent) : base(parent)
         {
         }
 
-        public override string TemplateName => Global.TEMPLATE_POST;
+        public override string TemplateName =>
+            Global.TEMPLATE_POST;
         
         public string Name
         {
@@ -27,13 +28,8 @@ namespace fruitfly.objects
             set;
         }
 
-        public string TitleTile
-        {
-            get
-            {
-                return Title;
-            }
-        }
+        public string TitleTile =>
+            Title;
 
         public DateTime Created
         {
@@ -53,13 +49,10 @@ namespace fruitfly.objects
             set;
         }
 
-        public string MdContent
-        {
-            get
-            {
-                return Context.GetLogic<Storage>().LoadContentByStorageId(StorageId);
-            }
-        }
+        public string MdContent =>
+            Context
+            .GetLogic<Storage>()
+            .LoadContentByStorageId(StorageId);
 
         public override string Render(RenderedFormats renderedFormats, string morph = null)
         {
@@ -73,15 +66,13 @@ namespace fruitfly.objects
             return base.Render(renderedFormats, morph);
         }
 
-        public override List<string> BuildFolderStack()
-        {
-            return new List<string>()
+        public override List<string> BuildFolderStack() =>
+            new List<string>()
             {
                 $"y{Created.Year}",
                 $"m{Created.Month}",
                 $"d{Created.Day}_post{Number}"
             };
-        }        
 
         public string Url 
         { 
@@ -99,33 +90,14 @@ namespace fruitfly.objects
             { Scope: "post", Name: Global.VAR_NAME_POST_TITLE_TILE }  => TitleTile,
             { Scope: "post", Name: Global.VAR_NAME_POST_CREATED }  => ToLocaleDate(Created),
             { Scope: "post", Name: Global.VAR_NAME_POST_URL } => Url,
-            { Scope: "post", Name: Global.VAR_NAME_POST_CONTENT }  => MdConverter.Convert(MdContent),
+            { Scope: "post", Name: Global.VAR_NAME_POST_CONTENT }  => Context.Current.MdConverter.Convert(MdContent),
             _ => Parent.GetVariableValue(variable)
         };
 
+        private CultureInfo Culture =>
+            new CultureInfo(Context.Current.Config.language.Replace("_", "-"));
 
-        private CultureInfo _Culture = null;
-
-        private CultureInfo Culture
-        {
-            get
-            {
-                if (_Culture == null)
-                {
-                    _Culture = new CultureInfo(Context.Config.language.Replace("_", "-"));
-                }
-                return _Culture;
-            }
-        }
-
-        private string ToLocaleDate(DateTime date)
-        {
-            return date.ToString("d", Culture);
-        }
-
-        private IMdConverter MdConverter
-        {
-            get;
-        } = new MarkdigHtmlConverter();
+        private string ToLocaleDate(DateTime date) =>
+            date.ToString("d", Culture);
     }
 }

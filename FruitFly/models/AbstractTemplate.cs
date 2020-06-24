@@ -7,15 +7,12 @@ namespace fruitfly.objects
 {
     public abstract class AbstractTemplate : IVariableSource
     {
-        protected Context Context { get; }
-
-        public virtual string Render(RenderedFormats renderedFormats, string morph = null)
-        {
-            return Context.GetLogic<VariableBinder>().Bind(
+        public virtual string Render(RenderedFormats renderedFormats, string morph = null) =>
+            Context.GetLogic<VariableBinder>()
+            .Bind(
                 Context.GetLogic<Storage>().LoadTemplate(TemplateName),
                 this
             ).ToString();
-        }
         
         public abstract string TemplateName { get; }
         
@@ -24,15 +21,14 @@ namespace fruitfly.objects
             get;
         } = new List<AbstractTemplate>();
 
-        public AbstractTemplate(Context context, AbstractTemplate parent)
+        public AbstractTemplate(AbstractTemplate parent)
         {
-            Context = context;
             Parent = parent;
         }
 
         protected virtual string RenderNestedTemplateByVariable(Variable variable)
         {
-            var nestedTemplate = new Template(Context, this, variable.Name);
+            var nestedTemplate = new Template(this, variable.Name);
             ChildParts.Add(nestedTemplate);
             return nestedTemplate.Render(RenderedFormats.Html);
         }
@@ -42,11 +38,14 @@ namespace fruitfly.objects
             get;
         }
 
+        private IVariableSource ConfigVariableSource =>
+            Context.Current.Config as IVariableSource;
+
         public virtual string GetVariableValue(Variable variable)
         {
             if(variable.Scope == Global.SCOPE_NAME_CONFIG)
             {
-                return (Context.Config as IVariableSource).GetVariableValue(variable);
+                return ConfigVariableSource.GetVariableValue(variable);
             }
             else if(variable.Scope == Global.SCOPE_NAME_TEMPLATE)
             {
@@ -61,9 +60,7 @@ namespace fruitfly.objects
             throw new System.Exception($"Unknown variable: [{variable.ReplaceBlock}] for template: [{TemplateName}]");
         }
 
-        public virtual List<string> BuildFolderStack()
-        {
-            return new List<string>();
-        }  
+        public virtual List<string> BuildFolderStack() =>
+            new List<string>();
     }
 }

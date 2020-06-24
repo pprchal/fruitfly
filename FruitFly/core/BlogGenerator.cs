@@ -18,25 +18,23 @@ namespace fruitfly.core
             return blog;
         }
 
-        private void GenerateBlogIndexFile(Blog blog)
-        {
+        private void GenerateBlogIndexFile(Blog blog) =>
             Context.GetLogic<Storage>().WriteContent(
                 folderStack: blog.BuildFolderStack(),
                 name: Global.TEMPLATE_INDEX, 
                 content: blog.Render(RenderedFormats.Html)
             );
-        }
 
-        private void GenerateBlogPostsFiles(Blog blog)
-        {
-            foreach(var post in blog.Posts)
+        private void GenerateBlogPostsFiles(Blog blog) =>
+            blog
+            .Posts
+            .ForEach(post =>
             {
                 Context.GetLogic<Storage>().WriteContent(
                     folderStack: post.BuildFolderStack(),
                     name: post.Name + ".html",
                     content: post.Render(RenderedFormats.Html)
                 );
-            }
-        }
+            });
     }
 }             
