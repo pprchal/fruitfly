@@ -25,13 +25,13 @@ namespace fruitfly.objects
 
         dynamic YamlConfig;
                 
-        public string TemplateDir => YamlConfig.templateDir;
-        public string WorkDir => YamlConfig.workDir;
-        public string Language => YamlConfig.language;
-        public string Home => YamlConfig.home;
-        public string Title => YamlConfig.title;
-        public string Template => YamlConfig.template;
-        public string FullVersion => "6.0";
+        public string templateDir => YamlConfig.templateDir;
+        public string workDir => YamlConfig.workDir;
+        public string language => YamlConfig.language;
+        public string home => YamlConfig.home;
+        public string title => YamlConfig.title;
+        public string template => YamlConfig.template;
+        public string fullVersion => "6.0";
 
         string IVariableSource.GetVariableValue(Variable variable) =>
             GetType()
@@ -42,16 +42,5 @@ namespace fruitfly.objects
                 target: this, 
                 args: null
             ) as string;
-
-        // string GetVariableValue(string variableName, object target) =>
-        //     GetType()
-        //     .InvokeMember(
-        //         name: variableName,
-        //         invokeAttr: System.Reflection.BindingFlags.GetProperty, 
-        //         binder: null, 
-        //         target: target, 
-        //         args: null
-        //     ) as string;
-
     }
 }

@@ -93,7 +93,7 @@ namespace fruitfly.objects
         };
 
         CultureInfo Culture =>
-            new CultureInfo(Context.Config.Language.Replace("_", "-"));
+            new CultureInfo(Context.Config.language.Replace("_", "-"));
 
         string ToLocaleDate(DateTime date) =>
             date.ToString("d", Culture);
