@@ -2,8 +2,7 @@
 
 namespace fruitfly.core
 {
-    public enum RenderedFormats
+    public abstract class AbstractLogic
     {
-        Html
     }
 }

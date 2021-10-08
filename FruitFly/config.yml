@@ -2,13 +2,17 @@
 # template: default
 
 # required
-language: cs_CZ
+language: cs
 
 # your title in blog
 title: blog - Pavel Prchal
 
 # optional - otherwise is templateDir taken from program directory
-templateDir: C:\Users\Pavel\Desktop\fruitfly\FruitFly.Tests
+templateDir: e:\fruitfly\FruitFly.Tests
+# templateDir: p:\PavelS\pavel.borec.cz
 
 # look for blog_input here and write output
-workDir: C:\Users\Pavel\Desktop\fruitfly\FruitFly.Tests
+# WITHOUT \blog_input
+# workDir: e:\fruitfly\FruitFly.Tests
+# workDir: p:\PavelS\pavel.borec.cz
+workDir:  e:\fruitfly\FruitFly.Tests

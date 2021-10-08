@@ -13,10 +13,11 @@ namespace FruitFly.Tests
         [TestCase("{template:menu.html}{scope:var1}{scope:var1}", ExpectedResult = "MENUaa")]
         public string IsBasicReplacementWorking(string content)
         {
-            return new VariableBinder().Bind(
-                content,
-                this
-            ).ToString();
+            return TemplateProcessor.Process(
+                content: content,
+                variableSource: this,
+                diag: "test--test"
+            );
         }
 
         string IVariableSource.GetVariableValue(Variable variable)

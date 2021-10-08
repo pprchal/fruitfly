@@ -5,17 +5,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using fruitfly.objects;
 
 namespace fruitfly.core
 {
     // Filesystem storage
-    public class Storage : AbstractLogic, IStorage
+    public class Storage : IStorage
     {
-        public string LoadTemplate(string templateName) =>
+        string IStorage.LoadTemplate(string templateName) =>
             File.ReadAllText(GetFullTemplateName(templateName));
 
-        public string LoadContentByStorageId(string storageId) =>
+        string IStorage.LoadContent(string storageId) =>
             File.ReadAllText(storageId);
             
         private string TEMPLATES_ROOT =>
@@ -30,13 +31,17 @@ namespace fruitfly.core
         private string GetFullTemplateName(string templateName) =>
             Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
 
-        public async void WriteContent(IList<string> folderStack, string name, string content) =>
+        async Task IStorage.WriteContent(IStorageContent folderStack, string name, string content) 
+        {
+            var fullPath = CreateFullPath(folderStack.BuildFolderStack(), name);
+            Runtime.ConsoleWrite($">> " + fullPath);
             await File.WriteAllTextAsync(
-                CreateFullPath(folderStack, name),
+                fullPath,
                 content
             );
+        }
 
-        public Blog Scan() =>
+        Blog IStorage.Scan() =>
             Scan(BLOG_INPUT_ROOT);
 
         private Blog Scan(string rootDir)
@@ -50,7 +55,7 @@ namespace fruitfly.core
             return blog;
         }
 
-        private string CreateFullPath(IList<string> folderStack, string name)
+        private string CreateFullPath(string[] folderStack, string name)
         {
             var outDirName = Path.Combine(
                 BLOG_OUTPUT_ROOT,
@@ -89,7 +94,7 @@ namespace fruitfly.core
             {
                 Name = mdFileInfo.Name,
                 Title = mdFileInfo.Name.Substring(0, mdFileInfo.Name.Length - ".md".Length),
-                StorageId = mdFileInfo.FullName,
+                StoragePath = mdFileInfo.FullName,
                 Created = new DateTime(
                     Convert.ToInt32(m.Groups[1].Value),
                     Convert.ToInt32(m.Groups[2].Value),

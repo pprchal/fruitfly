@@ -14,8 +14,27 @@
   </ItemGroup>
   <!--</snippetPackages>-->
 
+  <PropertyGroup>
+    <RestoreFallbackFolders>clear</RestoreFallbackFolders>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\FruitFly\FruitFly.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="templates\default\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="templates\default\menu.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="templates\default\post.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="templates\default\postTile.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

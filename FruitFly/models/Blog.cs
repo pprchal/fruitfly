@@ -1,48 +1,66 @@
 // Pavel Prchal, 2019
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public class Blog : AbstractTemplate
+    public class Blog : AbstractTemplate, IStorageContent, IVariableSource
     {
+        private readonly StringBuilder sb = new StringBuilder();
+
+        public override string Render(RenderedFormats format, string morph = null)
+        {
+            var html = TemplateProcessor.Process(
+                content: Context.Storage.LoadTemplate(Constants.Templates.Index),
+                variableSource: this,
+                diag: Constants.Templates.Index
+            );
+
+            return html;
+        }
+
         public Blog() : base(null)
         {
         }
 
-        public override string TemplateName => 
-            Global.TEMPLATE_INDEX;
+        public double EllapsedSeconds =>
+            new TimeSpan(DateTime.Now.Ticks - Context.StartTime.Ticks).TotalSeconds;
 
-        public List<Post> Posts
+
+        public override string TemplateName => 
+            Constants.Templates.Index;
+
+        public IEnumerable<Post> Posts
         {
             get;
-        } = new List<Post>();
+            internal set;
+        }
 
         public override string GetVariableValue(Variable variable)
         {
-            if(variable.Scope == Global.SCOPE_NAME_BLOG && variable.Name == Global.VAR_NAME_INDEX_POSTS)
+            if(variable.Scope == Constants.Blog.Scope && 
+               variable.Name == Constants.Blog.Posts)
             {
-                return RenderPostTiles();
+                var postTiles = Posts.Aggregate(
+                    sb.Clear(),
+                    (sb, post) => sb.Append(post.Render(RenderedFormats.Html, Constants.Blog.Tile))
+                ).ToString();  
+                return postTiles;          
             }
-
+                
             if(Parent != null)
             {
-                return Parent.GetVariableValue(variable);
+                return (Parent as IVariableSource).GetVariableValue(variable);
             }
 
             return base.GetVariableValue(variable);
         }
 
-        private string RenderPostTiles()
-        {
-            var sb = new StringBuilder();
-            foreach (var post in Posts)
-            {
-                sb.Append(post.Render(RenderedFormats.Html, Global.MORPH_TILE));
-            }
-            return sb.ToString();
-        }
+        string[] IStorageContent.BuildFolderStack() =>
+            new string[] { "index.html" };
     }
 }

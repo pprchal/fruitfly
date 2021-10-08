@@ -1,5 +1,6 @@
 // Pavel Prchal, 2019
 
+using fruitfly.core;
 using Markdig;
 
 namespace fruitfly

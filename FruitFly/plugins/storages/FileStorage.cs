@@ -10,13 +10,10 @@ using fruitfly.objects;
 namespace fruitfly.core
 {
     // Filesystem storage
-    public class Storage : AbstractLogic, IStorage
+    public class FileStorage : AbstractLogic, IStorage
     {
         public string LoadTemplate(string templateName) =>
             File.ReadAllText(GetFullTemplateName(templateName));
-
-        public string LoadContentByStorageId(string storageId) =>
-            File.ReadAllText(storageId);
             
         private string TEMPLATES_ROOT =>
             Path.Combine(Context.Config.templateDir, Constants.Templates.Directory);
@@ -30,8 +27,8 @@ namespace fruitfly.core
         private string GetFullTemplateName(string templateName) =>
             Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
 
-        public async void WriteContent(IList<string> folderStack, string name, string content) =>
-            await File.WriteAllTextAsync(
+        public void WriteContent(IList<string> folderStack, string name, string content) =>
+            File.WriteAllText(
                 CreateFullPath(folderStack, name),
                 content
             );
@@ -44,8 +41,7 @@ namespace fruitfly.core
             var blog = new Blog();
             blog.Posts = (from directory in Directory.EnumerateDirectories(rootDir, "*.*", SearchOption.AllDirectories)
                      where directory != null
-                     select TryParsePost(blog, directory)
-                     )
+                     select TryParsePost(blog, directory))
                 .OfType<Post>(); // skip nulls ;)
             return blog;
         }
@@ -65,10 +61,11 @@ namespace fruitfly.core
             return Path.Combine(outDirName, $"{name}");
         }
 
-
+        public string LoadContentByStorageId(string storageId) =>
+            File.ReadAllText(storageId);
 
         private static readonly Regex POST_PATTERN =
-            new Regex(@"y(\d+)\\m(\d+)\\d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled);
+            new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         private static Post TryParsePost(Blog blog, string contentDir)
         {

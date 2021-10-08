@@ -5,7 +5,7 @@ using fruitfly.objects;
 
 namespace fruitfly.core
 {
-    public static class Context
+    public static class Runtime
     {
         public static Action<string> ConsoleWrite
         {
@@ -19,20 +19,7 @@ namespace fruitfly.core
             set;
         } = new MarkdigHtmlConverter();
 
-        public static BlogGenerator BlogGenerator
-        {
-            get;
-            set;
-        } = new BlogGenerator();
-
-        public static VariableBinder VariableBinder
-        {
-            get;
-            set;
-        } = new VariableBinder();
-        
-
-        public static Storage Storage
+        public static IStorage Storage
         {
             get;
             set;

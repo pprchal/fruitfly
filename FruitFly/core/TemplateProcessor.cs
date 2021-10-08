@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace fruitfly.core
 {
-    public class VariableBinder : AbstractLogic
+    public static class TemplateProcessor 
     {
-        public string Bind(string content, IVariableSource variableSource, string diag) =>
+        public static string Process(string content, IVariableSource variableSource, string diag) =>
             FindVariablesIn(content)
                 .Aggregate(
                     new StringBuilder(content),
@@ -27,7 +27,7 @@ namespace fruitfly.core
 
         static readonly Regex VARIABLE_PATTERN = new Regex(@"\{([\w\d]*):([\w\.\d]+)\}", RegexOptions.Compiled);
 
-        private IEnumerable<Variable> FindVariablesIn(string content) =>
+        private static IEnumerable<Variable> FindVariablesIn(string content) =>
             from match in VARIABLE_PATTERN.Matches(content).OfType<Match>()
             select Variable.CreateFrom(match);
     }

@@ -5,7 +5,7 @@ Basics:
 * Fruitfly take `.md` file and converts it into `.html`
 * Templates can be recurred, look into `{variables}`
 
-## Quick steps
+## quick steps
 1) put your data into your `blog_input` folder i.e: `C:\myblog\blog_input`
 2) modify `config.yml` - is well commented and simple
 3) run `dotnet run` in directory which contains `config.yml` folder and/or `dotnet run config.yml`
@@ -20,7 +20,7 @@ PS C:\FruitFly> dotnet run
 
 pretty simple, huh?
 
-## Required structure
+## qequired structure
 `y{year}/m{month}/d{day}_post{n}`
 
 Example:
@@ -38,7 +38,8 @@ C:.
 ```
 
 
-## Variables
+## changelog
+* 11-08-2020 polished version - simplified code
 
 
 ## Future
