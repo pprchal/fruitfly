@@ -1,8 +1,8 @@
-// Pavel Prchal, 2019
+// Pavel Prchal, 2021
 
 namespace fruitfly.core
 {
-    public abstract class AbstractLogic
+    public abstract class AbstractLogic 
     {
     }
-}
+}             

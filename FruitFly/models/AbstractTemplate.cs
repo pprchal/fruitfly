@@ -1,57 +1,78 @@
-// Pavel Prchal, 2019, 2020
+// Pavel Prchal, 2019
 
+using System.Collections.Generic;
 using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public abstract class AbstractTemplate : IVariableSource
+    public abstract class AbstractTemplate : AbstractLogic, IVariableSource
     {
-        
-        public abstract string TemplateName { get; }
+        protected IStorage Storage;
 
-        public AbstractTemplate(AbstractTemplate parent)
+        public AbstractTemplate(AbstractTemplate parent, IStorage storage)
         {
             Parent = parent;
+            Storage = storage;
         }
 
-        public virtual string Render(RenderedFormats renderedFormats, string morph = null) =>
-            TemplateProcessor
-                .Process(
-                    content: Context.Storage.LoadTemplate(TemplateName),
-                    variableSource: this,
-                    diag: TemplateName
-                );
+        public AbstractTemplate(IStorage storage)
+        {
+            Parent = null;
+            Storage = storage;
+        }
 
+        IConverter Converter;
+        public virtual string Render(IConverter converter, string morph = null) 
+        {
+            Converter = converter;
+            return new VariableBinder()
+                .Bind(
+                    content: Storage.LoadTemplate(TemplateName),
+                    variableSource: this
+                ).ToString();
+        }
+        
+        public abstract string TemplateName { get; }
+        
+        public IList<AbstractTemplate> ChildParts
+        {
+            get;
+        } = new List<AbstractTemplate>();
 
-        protected virtual string RenderNestedTemplateByVariable(Variable variable) =>
-            new Template(
-                parent: this,
-                templateName: variable.Name
-            )
-            .Render(RenderedFormats.Html);
+        public AbstractTemplate Parent
+        {
+            get;
+        }
 
-        public AbstractTemplate Parent;
-
-        private IVariableSource ConfigVariableSource =>
-            Context.Config;
+        IVariableSource ConfigVariableSource =>
+            Context.Config as IVariableSource;
 
         public virtual string GetVariableValue(Variable variable)
         {
-            if(variable.Scope == Constants.Config.Scope)
+            if(variable.Scope == Constants.Scope.CONFIG)
             {
                 return ConfigVariableSource.GetVariableValue(variable);
             }
-            else if(variable.Scope == Constants.Templates.Scope)
+            else if(variable.Scope == Constants.Scope.TEMPLATE)
             {
-                return RenderNestedTemplateByVariable(variable);
+                var nestedTemplate = new Template(
+                    parent: this, 
+                    templateName: variable.Name,
+                    storage: Storage
+                );
+                ChildParts.Add(nestedTemplate);
+                return nestedTemplate.Render(Converter);  
             }
 
             if(Parent != null)
             {
-                return (Parent as IVariableSource).GetVariableValue(variable);
+                return Parent.GetVariableValue(variable);
             }
 
             throw new System.Exception($"Unknown variable: [{variable.ReplaceBlock}] for template: [{TemplateName}]");
         }
+
+        public virtual IList<string> BuildStoragePath() =>
+            new List<string>();
     }
 }

@@ -1,51 +1,42 @@
 // Pavel Prchal, 2019
 
 using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.IO;
 using fruitfly.core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
+using YamlDotNet.Serialization;
 
 namespace fruitfly.objects
 {
-    [Serializable]
     public class Configuration : IVariableSource
     {
-        public string templateDir
+        Configuration()
         {
-            get;
-            set;
-        } = "";
-
-        public string workDir
-        {
-            get;
-            set;
+            YamlConfig = LoadYamlConfig();
         }
         
-        public string language
-        {
-            get;
-            set;
-        }
+        static dynamic LoadYamlConfig() =>
+            new DeserializerBuilder()
+                .Build()
+                .Deserialize<ExpandoObject>(
+                    new StringReader(
+                        File.ReadAllText(Constants.Config.YML)
+                    )
+                );
 
-        public string home
-        {
-            get;
-            set;
-        }
-        
-        public string title
-        {
-            get;
-            set;
-        } = "blog";
+        dynamic YamlConfig;
+                
+        public string TemplateDir => YamlConfig.templateDir;
+        public string WorkDir => YamlConfig.workDir;
+        public string Language => YamlConfig.language;
+        public string Home => YamlConfig.home;
+        public string Title => YamlConfig.title;
+        public string Template => YamlConfig.template;
 
-        public string template
-        {
-            get;
-            set;
-        } = "default";
-
-        public string fullVersion =>
-            "5.0";
+        public string FullVersion => "5.0";
 
         string IVariableSource.GetVariableValue(Variable variable) =>
             GetType()
@@ -56,5 +47,16 @@ namespace fruitfly.objects
                 target: this, 
                 args: null
             ) as string;
+
+        // string GetVariableValue(string variableName, object target) =>
+        //     GetType()
+        //     .InvokeMember(
+        //         name: variableName,
+        //         invokeAttr: System.Reflection.BindingFlags.GetProperty, 
+        //         binder: null, 
+        //         target: target, 
+        //         args: null
+        //     ) as string;
+
     }
 }

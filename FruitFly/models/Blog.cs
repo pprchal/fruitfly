@@ -1,66 +1,63 @@
 // Pavel Prchal, 2019
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text;
 using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public class Blog : AbstractTemplate, IStorageContent, IVariableSource
+    public class Blog : AbstractTemplate
     {
-        private readonly StringBuilder sb = new StringBuilder();
-
-        public override string Render(RenderedFormats format, string morph = null)
-        {
-            var html = TemplateProcessor.Process(
-                content: Context.Storage.LoadTemplate(Constants.Templates.Index),
-                variableSource: this,
-                diag: Constants.Templates.Index
-            );
-
-            return html;
-        }
-
-        public Blog() : base(null)
+        IConverter Converter;
+        public Blog(IStorage storage) : base(storage)
         {
         }
 
-        public double EllapsedSeconds =>
-            new TimeSpan(DateTime.Now.Ticks - Context.StartTime.Ticks).TotalSeconds;
-
+        public override string Render(IConverter converter, string morph = null) 
+        {
+            Converter = converter;
+            return base.Render(converter, morph);
+        }
 
         public override string TemplateName => 
-            Constants.Templates.Index;
+            Constants.Templates.INDEX;
 
         public IEnumerable<Post> Posts
         {
             get;
-            internal set;
+            set;
         }
 
         public override string GetVariableValue(Variable variable)
         {
-            if(variable.Scope == Constants.Blog.Scope && 
-               variable.Name == Constants.Blog.Posts)
+            if(variable.Scope == Constants.Scope.BLOG && 
+               variable.Name == Constants.Variables.INDEX_POSTS)
             {
-                var postTiles = Posts.Aggregate(
-                    sb.Clear(),
-                    (sb, post) => sb.Append(post.Render(RenderedFormats.Html, Constants.Blog.Tile))
-                ).ToString();  
-                return postTiles;          
+                return RenderPostTiles();
             }
-                
+
             if(Parent != null)
             {
-                return (Parent as IVariableSource).GetVariableValue(variable);
+                return Parent.GetVariableValue(variable);
             }
 
             return base.GetVariableValue(variable);
         }
 
-        string[] IStorageContent.BuildFolderStack() =>
-            new string[] { "index.html" };
+        string RenderPostTiles() =>
+            Posts.Aggregate(
+                seed: new StringBuilder(),
+                func: (sb, post) =>
+                {
+                    sb.Append(
+                        post.Render(
+                            converter: Converter, 
+                            morph: Constants.MORPH_TILE
+                        )
+                    );
+                    return sb;
+                }
+            ).ToString();
     }
 }

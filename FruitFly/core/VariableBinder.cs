@@ -1,4 +1,4 @@
-// Pavel Prchal, 2019, 2020
+// Pavel Prchal, 2019
 
 using System.Collections.Generic;
 using System.Linq;
@@ -7,28 +7,28 @@ using System.Text.RegularExpressions;
 
 namespace fruitfly.core
 {
-    public class VariableBinder : AbstractLogic
+    public class VariableBinder 
     {
-        public string Bind(string content, IVariableSource variableSource, string diag) =>
-            FindVariablesIn(content)
-                .Aggregate(
-                    new StringBuilder(content),
-                    (sb, variable) =>
-                    {
-                        var value = variableSource.GetVariableValue(variable);
-                        Context.ConsoleWrite($"[{diag}]:{variable.ReplaceBlock} <= {value}");
-                        sb.Replace(
-                            variable.ReplaceBlock,
-                            value
-                        );
-                        return sb;
-                    }
-            ).ToString();
+        static readonly Regex VariableRegex = new Regex("\\{([\\w\\d]+):([\\w\\.\\d]+)\\}", RegexOptions.Compiled);
 
-        static readonly Regex VARIABLE_PATTERN = new Regex(@"\{([\w\d]*):([\w\.\d]+)\}", RegexOptions.Compiled);
+        public StringBuilder Bind(string content, IVariableSource variableSource) =>
+            FindVariablesInContent(content)
+            .Aggregate(
+                seed: new StringBuilder(content),
+                func: (sb, variable) =>
+                {
+                    sb.Replace(
+                        variable.ReplaceBlock,
+                        variableSource.GetVariableValue(variable)
+                    );
+                    return sb;
+                }
+            );
 
-        private IEnumerable<Variable> FindVariablesIn(string content) =>
-            from match in VARIABLE_PATTERN.Matches(content).OfType<Match>()
-            select Variable.CreateFrom(match);
+
+        IEnumerable<Variable> FindVariablesInContent(string content) =>
+            VariableRegex
+                .Matches(content)
+                .Select(match => Variable.CreateFrom(match));
     }
 }

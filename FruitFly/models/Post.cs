@@ -1,85 +1,101 @@
-// Pavel Prchal, 2019, 2020
+// Pavel Prchal, 2019
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Globalization;
 using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public class Post : AbstractTemplate, IStorageContent
+    public class Post : AbstractTemplate
     {
-        public Post(AbstractTemplate parent) : base(parent)
+        public Post(AbstractTemplate parent, IStorage storage) : base(parent, storage)
         {
         }
 
-        public override string TemplateName =>
-            Constants.Templates.Post;
+        public override string TemplateName => Constants.Templates.POST;
         
-        public string Name;
-
-        public string Title;
-
-        public string TitleTile =>
-            Title;
-
-        public DateTime Created;
-
-        public string StoragePath;
-
-        public int Number;
-
-
-        public override string Render(RenderedFormats format, string morph = null)
+        public string Name
         {
-            if(morph == Constants.Blog.Tile)
-            {
-                return TemplateProcessor.Process(
-                    content: Context.Storage.LoadTemplate(Constants.Templates.Tile),
-                    variableSource: this,
-                    diag: Constants.Templates.Tile
-                );
-            }
-            return base.Render(format, morph);
+            get;
+            set;
         }
 
-        string[] IStorageContent.BuildFolderStack() =>
-            new string[]
+        public string Title
+        {
+            get;
+            set;
+        }
+
+        public string TitleTile => Title;
+
+        public DateTime Created
+        {
+            get;
+            set;
+        }
+
+        public string StorageId
+        {
+            get;
+            set;
+        }
+
+        public int Number
+        {
+            get;
+            set;
+        }
+
+        public string Content =>
+            Storage.LoadContentByStorageId(StorageId);
+
+        IConverter Converter;
+        public override string Render(IConverter converter, string morph = null) 
+        {
+            Converter = converter;
+            return morph == Constants.MORPH_TILE
+            ?
+                new VariableBinder().Bind(
+                    content: Storage.LoadTemplate(Constants.Templates.POST_TILE),
+                    variableSource: this
+                ).ToString()
+            :
+            base.Render(converter, morph);
+        }
+        
+        public override IList<string> BuildStoragePath() =>
+            new List<string>
             {
                 $"y{Created.Year}",
                 $"m{Created.Month}",
                 $"d{Created.Day}_post{Number}"
             };
 
-        private string Url 
+        public string Url 
         { 
             get
             {
-                return string
-                    .Join("\\", (this as IStorageContent).BuildFolderStack().Concat(new string[] { Name + ".html" }));
+                var storagePath = BuildStoragePath();
+                storagePath.Add(Name + ".html");
+                return string.Join("\\", storagePath);
             }
         }
         
         public override string GetVariableValue(Variable variable) => variable switch
         {
-            { Scope: Constants.Post.Scope, Name: Constants.Post.Title }  => Title,
-            { Scope: Constants.Post.Scope, Name: Constants.Post.TitleTile }  => TitleTile,
-            { Scope: Constants.Post.Scope, Name: Constants.Post.Created }  => ToLocaleDate(Created),
-            { Scope: Constants.Post.Scope, Name: Constants.Post.Url } => Url,
-            { Scope: Constants.Post.Scope, Name: Constants.Post.Content }  => Context.MdConverter.Convert(GetMdContent()),
-            _ => (Parent as IVariableSource).GetVariableValue(variable)
+            { Scope: "post", Name: Constants.Variables.POST_TITLE }  => Title,
+            { Scope: "post", Name: Constants.Variables.POST_TITLE_TILE }  => TitleTile,
+            { Scope: "post", Name: Constants.Variables.POST_CREATED }  => ToLocaleDate(Created),
+            { Scope: "post", Name: Constants.Variables.POST_URL } => Url,
+            { Scope: "post", Name: Constants.Variables.POST_CONTENT }  => Converter.Convert(Content),
+            _ => Parent.GetVariableValue(variable)
         };
 
+        CultureInfo Culture =>
+            new CultureInfo(Context.Config.Language.Replace("_", "-"));
 
-        private string GetMdContent() =>
-            Context
-                .Storage
-                .LoadContent(StoragePath);
-
-        private CultureInfo Culture =>
-            new CultureInfo(Context.Config.language.Replace("_", "-"));
-
-        private string ToLocaleDate(DateTime date) =>
+        string ToLocaleDate(DateTime date) =>
             date.ToString("d", Culture);
     }
 }

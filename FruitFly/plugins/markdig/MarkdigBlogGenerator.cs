@@ -4,9 +4,9 @@ using Markdig;
 
 namespace fruitfly
 {
-    public class MarkdigHtmlConverter : IMdConverter
+    public class MarkdigHtmlConverter : IConverter
     {
-        private readonly MarkdownPipeline pipeline = null;
+        private MarkdownPipeline pipeline = null;
 
         public MarkdigHtmlConverter()
         {
@@ -21,7 +21,7 @@ namespace fruitfly
                 .Build();
         }
 
-        string IMdConverter.Convert(string mdContent) =>
+        string IConverter.Convert(string mdContent) =>
             Markdown.ToHtml(mdContent, pipeline);
     }
 }
