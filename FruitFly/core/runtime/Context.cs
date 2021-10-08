@@ -1,10 +1,7 @@
 // Pavel Prchal, 2019
 
 using System;
-using System.Dynamic;
-using System.IO;
 using fruitfly.objects;
-using YamlDotNet.Serialization;
 
 namespace fruitfly.core
 {
@@ -28,6 +25,5 @@ namespace fruitfly.core
         {
             get;
         } = DateTime.Now;
-
     }
 }

@@ -5,11 +5,12 @@ namespace fruitfly.core
     public class Constants
     {
         public const string BLOG_INPUT = "blog_input";
+        public const string MORPH_TILE = "tile";
+        public const string VAR_NAME_CONTENT = "content";
 
         public class Templates
         {
             public const string FOLDER = "templates";
-    
             public const string INDEX = "index.html";
             public const string POST = "post.html";
             public const string POST_TILE = "postTile.html";
@@ -27,12 +28,6 @@ namespace fruitfly.core
 
             public const string BLOG = "blog";
         }
-
-
-        public const string MORPH_TILE = "tile";
-
-
-        public const string VAR_NAME_CONTENT = "content";
 
         // blog:posts
         public class Variables

@@ -1,19 +1,15 @@
 // Pavel Prchal, 2019
 
-using System;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using fruitfly.core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
 using YamlDotNet.Serialization;
 
 namespace fruitfly.objects
 {
     public class Configuration : IVariableSource
     {
-        Configuration()
+        public Configuration()
         {
             YamlConfig = LoadYamlConfig();
         }
@@ -35,8 +31,7 @@ namespace fruitfly.objects
         public string Home => YamlConfig.home;
         public string Title => YamlConfig.title;
         public string Template => YamlConfig.template;
-
-        public string FullVersion => "5.0";
+        public string FullVersion => "6.0";
 
         string IVariableSource.GetVariableValue(Variable variable) =>
             GetType()

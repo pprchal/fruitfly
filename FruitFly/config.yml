@@ -1,4 +1,5 @@
-# optional - i do not provide other templates
+# template name
+template: default
 
 # language for date, time,...
 language: cs_CZ
@@ -7,10 +8,8 @@ language: cs_CZ
 title: blog - Pavel Prchal
 
 # optional - otherwise is templateDir taken from program directory
-templateDir: C:\Users\Pavel\Desktop\fruitfly\FruitFly.Tests
+templateDir: ~/testblog/blog_input
 
-# look for blog_input here and write output
-workDir: C:\Users\Pavel\Desktop\fruitfly\FruitFly.Tests
+# look for [blog_input] here and write to [blog_output]
+workDir: ~/testblog
 
-# template name
-template: default
