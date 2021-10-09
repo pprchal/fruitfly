@@ -1,42 +1,26 @@
 ﻿// Pavel Prchal, 2019
 
-using System.Threading.Tasks;
 using fruitfly.core;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace fruitfly
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static int Main(string[] args)
         {
+            var console = new Console() as IConsole;
             if(args.Length != 0)
             {
-                System.Console.WriteLine("~o~ did you expect death-star? ~o~");
-                return;
+                console.WriteLine("~o~ did you expect death-star? ~o~");
+                return 0;
             }
 
-            using IHost host = Host
-                .CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(cfg =>
-                {
-                    cfg.Sources.Clear();
-                    // cfg.Add(new YamlCounfigSource());
-                })
-                .ConfigureServices(services =>
-                {
-                    services
-                        .AddSingleton<IConsole, Console>()
-                        .AddSingleton<IStorage, FileStorage>()
-                        .AddSingleton<IConverter, MarkdigHtmlConverter>()
-                        .AddTransient(typeof(IBlogGenerator), typeof(BlogGenerator));
-                })
-                .Build();
-
-            var bg = host.Services.GetService<IBlogGenerator>();
-            bg.GenerateBlog(args);
-            await host.RunAsync();
+            (new BlogGenerator(
+                storage: new FileStorage(console),
+                console: console,
+                converter: new MarkdigHtmlConverter()
+            ) as IBlogGenerator).GenerateBlog(args);
+            return 0;
         }
     }
 }

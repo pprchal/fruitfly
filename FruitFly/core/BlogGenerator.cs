@@ -6,7 +6,7 @@ using fruitfly.objects;
 
 namespace fruitfly.core
 {
-    public class BlogGenerator : AbstractLogic, IBlogGenerator
+    public class BlogGenerator : IBlogGenerator
     {
         IStorage Storage;
         IConsole Console;

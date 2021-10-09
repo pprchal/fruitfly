@@ -5,7 +5,7 @@ using fruitfly.core;
 
 namespace fruitfly.objects
 {
-    public abstract class AbstractTemplate : AbstractLogic, IVariableSource
+    public abstract class AbstractTemplate : IVariableSource
     {
         protected IStorage Storage;
 

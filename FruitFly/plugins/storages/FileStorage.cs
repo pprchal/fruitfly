@@ -1,7 +1,6 @@
 // Pavel Prchal, 2019
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -10,7 +9,7 @@ using fruitfly.objects;
 namespace fruitfly.core
 {
     // Filesystem storage
-    public class FileStorage : AbstractLogic, IStorage
+    public class FileStorage : IStorage
     {
         IConsole Console;
 
