@@ -1,18 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{config:language}">
 
 <head>
   <meta charset="utf-8" />
   <title>{config:title}</title>
-  <!-- FONT -->
-  <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
 </head>
 
 <body>
+  {templates:menu.html}
 
   <div class="container">
     <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
@@ -37,7 +33,7 @@
 
   <div class="container">
     <h2>Příspěvky</h2>
-    {blog:posts}
+    {:posts}
   </div>
 </body>
 

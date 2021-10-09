@@ -1,51 +1,37 @@
 // Pavel Prchal, 2019
 
-using System;
+using System.Dynamic;
+using System.IO;
 using fruitfly.core;
+using YamlDotNet.Serialization;
 
 namespace fruitfly.objects
 {
-    [Serializable]
     public class Configuration : IVariableSource
     {
-        public string templateDir
+        public Configuration()
         {
-            get;
-            set;
-        } = "";
-
-        public string workDir
-        {
-            get;
-            set;
+            YamlConfig = LoadYamlConfig();
         }
         
-        public string language
-        {
-            get;
-            set;
-        }
+        static dynamic LoadYamlConfig() =>
+            new DeserializerBuilder()
+                .Build()
+                .Deserialize<ExpandoObject>(
+                    new StringReader(
+                        File.ReadAllText(Constants.Config.YML)
+                    )
+                );
 
-        public string home
-        {
-            get;
-            set;
-        }
-        
-        public string title
-        {
-            get;
-            set;
-        } = "blog";
-
-        public string template
-        {
-            get;
-            set;
-        } = "default";
-
-        public string fullVersion =>
-            "5.0";
+        dynamic YamlConfig;
+                
+        public string templateDir => YamlConfig.templateDir;
+        public string workDir => YamlConfig.workDir;
+        public string language => YamlConfig.language;
+        public string home => YamlConfig.home;
+        public string title => YamlConfig.title;
+        public string template => YamlConfig.template;
+        public string fullVersion => "6.0";
 
         string IVariableSource.GetVariableValue(Variable variable) =>
             GetType()

@@ -1,56 +1,88 @@
-// Pavel Prchal, 2019, 2020
+// Pavel Prchal, 2019
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.IO;
 using System.Text.RegularExpressions;
 using fruitfly.objects;
 
 namespace fruitfly.core
 {
     // Filesystem storage
-    public class FileStorage : AbstractLogic, IStorage
+    public class FileStorage : IStorage
     {
-        public string LoadTemplate(string templateName) =>
-            File.ReadAllText(GetFullTemplateName(templateName));
-            
-        private string TEMPLATES_ROOT =>
-            Path.Combine(Context.Config.templateDir, Constants.Templates.Directory);
+        IConsole Console;
 
-        private string BLOG_INPUT_ROOT =>
-            Path.Combine(Context.Config.workDir, Constants.Blog.InputDirectory);
+        public FileStorage(IConsole console)
+        {
+            Console = console;
+        }
 
-        private string BLOG_OUTPUT_ROOT =>
-            Path.Combine(Context.Config.workDir);
+        string IStorage.LoadTemplate(string templateName) =>
+            ReadContent(GetFullTemplateName(templateName));
 
-        private string GetFullTemplateName(string templateName) =>
+        string IStorage.LoadContentByStorageId(string storagePath) =>
+            ReadContent(storagePath);
+
+
+        string ReadContent(string storagePath)
+        {
+            Console.WriteLine($"R< {storagePath}");
+            return File.ReadAllText(storagePath);
+        }
+
+        void IStorage.WriteContent(string[] folderStack, string name, string content) 
+        {
+            var fullFileName = CreateFullPath(folderStack, name);
+            Console.WriteLine($"W> {fullFileName}");
+            File.WriteAllText(fullFileName, content);
+        }
+
+        string TEMPLATES_ROOT =>
+            Path.Combine(Context.Config.templateDir, Constants.Templates.FOLDER);
+
+        string BLOG_INPUT_ROOT =>
+            Path.Combine(Context.Config.workDir, Constants.BLOG_INPUT);
+
+        string BLOG_OUTPUT_ROOT => Context.Config.workDir;
+
+        string GetFullTemplateName(string templateName) =>
             Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
 
-        public void WriteContent(IList<string> folderStack, string name, string content) =>
-            File.WriteAllText(
-                CreateFullPath(folderStack, name),
-                content
-            );
 
-        public Blog Scan() =>
-            Scan(BLOG_INPUT_ROOT);
 
-        private Blog Scan(string rootDir)
+        Blog IStorage.Scan() => Scan(BLOG_INPUT_ROOT);
+
+        static readonly Regex YEAR = new Regex("y(\\d+)");
+        Blog Scan(string rootDir) 
         {
-            var blog = new Blog();
-            blog.Posts = (from directory in Directory.EnumerateDirectories(rootDir, "*.*", SearchOption.AllDirectories)
-                     where directory != null
-                     select TryParsePost(blog, directory))
-                .OfType<Post>(); // skip nulls ;)
+            var blog = new Blog(this);
+
+            blog.Posts = new DirectoryInfo(rootDir)
+                .EnumerateFiles("*.md", new EnumerationOptions{ RecurseSubdirectories = true})
+                .Select(fileInfo => (FileInfo: fileInfo, M: DirectoryRe.Match(fileInfo.DirectoryName)))
+                .Where(t => t.M.Success)
+                .Select(t => new Post(blog, this)
+                {
+                    Name = t.FileInfo.Name,
+                    Title = t.FileInfo.Name.Substring(0, t.FileInfo.Name.Length - ".md".Length),
+                    StorageId = t.FileInfo.FullName,
+                    Created = new DateTime(
+                        Convert.ToInt32(t.M.Groups[1].Value), 
+                        Convert.ToInt32(t.M.Groups[2].Value), 
+                        Convert.ToInt32(t.M.Groups[3].Value)
+                    ),
+                    Number = Convert.ToInt32(t.M.Groups[4].Value)
+                });
+
             return blog;
         }
 
-        private string CreateFullPath(IList<string> folderStack, string name)
+        string CreateFullPath(string[] folderStack, string name)
         {
             var outDirName = Path.Combine(
                 BLOG_OUTPUT_ROOT,
-                Path.Combine(folderStack.ToArray())
+                Path.Combine(folderStack)
             );
 
             if(!Directory.Exists(outDirName))
@@ -61,41 +93,12 @@ namespace fruitfly.core
             return Path.Combine(outDirName, $"{name}");
         }
 
-        public string LoadContentByStorageId(string storageId) =>
-            File.ReadAllText(storageId);
 
-        private static readonly Regex POST_PATTERN =
-            new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
-        private static Post TryParsePost(Blog blog, string contentDir)
-        {
-            var m = POST_PATTERN.Match(contentDir);
-            if(m.Success)
-            {
-                return (from mdFileInfo in new DirectoryInfo(contentDir).EnumerateFiles("*.md")
-                        where IsTemplateContentFile(mdFileInfo)
-                        select CreatePost(blog, m, mdFileInfo))
-                .First();
-            }
+        // static readonly Regex DirectoryRe =
+        //     new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
-            return null;
-        }
-
-        private static Post CreatePost(Blog blog, Match m, FileInfo mdFileInfo) =>
-            new Post(blog)
-            {
-                Name = mdFileInfo.Name,
-                Title = mdFileInfo.Name.Substring(0, mdFileInfo.Name.Length - ".md".Length),
-                StorageId = mdFileInfo.FullName,
-                Created = new DateTime(
-                    Convert.ToInt32(m.Groups[1].Value),
-                    Convert.ToInt32(m.Groups[2].Value),
-                    Convert.ToInt32(m.Groups[3].Value)
-                ),
-                Number = Convert.ToInt32(m.Groups[4].Value)
-            };
-
-        private static bool IsTemplateContentFile(FileInfo fileInfo) =>
-            fileInfo.FullName.EndsWith(".md");
+        static readonly Regex DirectoryRe =
+            new Regex(@"y(\d+)\/m(\d+)\/d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled);
     }
 }

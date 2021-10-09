@@ -1,52 +1,52 @@
-// Pavel Prchal, 2019, 2020
+// Pavel Prchal, 2019
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using fruitfly.objects;
 
 namespace fruitfly.core
 {
-    public static class BlogGenerator 
+    public class BlogGenerator : IBlogGenerator
     {
-        public static Blog GenerateBlog()
+        IStorage Storage;
+        IConsole Console;
+        IConverter Converter;
+
+        public BlogGenerator(IStorage storage, IConsole console, IConverter converter)
         {
-            Context.ConsoleWrite("~o~ FRUITFLY 2.0 Blog generator");
-            
-            
-            var blog = Context.Storage.Scan();
+            Storage = storage; 
+            Console = console;
+            Converter = converter;
+        }
 
-
-
-            GeneratePosts(blog);
+        Blog IBlogGenerator.GenerateBlog(string[] args)
+        {
+            Console.WriteLine("~o~ FRUITFLY 1.0 Blog generator");
+            var blog = Storage.Scan();
+            GenerateBlogPostsFiles(blog);
             GenerateBlogIndexFile(blog);
-            
-            Context.ConsoleWrite($"{blog.Posts.Count()} ~o~ generated at: ${blog.EllapsedSeconds} second(s)");
+            var seconds = new TimeSpan(DateTime.Now.Ticks - Context.StartTime.Ticks).TotalSeconds;
+            Console.WriteLine($"{blog.Posts.Count()} ~o~ generated at: ${seconds} second(s)");
             return blog;
         }
 
-        private static void GenerateBlogIndexFile(Blog blog) =>
-            Context.Storage.WriteContent(
-                folderStack: blog,
-                name: Constants.Templates.Index, 
-                content: blog.Render(RenderedFormats.Html)
+        void GenerateBlogIndexFile(Blog blog) =>
+            Storage.WriteContent(
+                folderStack: blog.BuildStoragePath().ToArray(),
+                name: Constants.Templates.INDEX, 
+                content: blog.Render(Converter)
             );
 
-        private static async void GeneratePosts(Blog blog) 
+        void GenerateBlogPostsFiles(Blog blog) 
         {
-            foreach (var post in blog.Posts)
+            foreach(var post in blog.Posts)
             {
-                await GeneratePost(post);
+                Storage.WriteContent(
+                    folderStack: post.BuildStoragePath().ToArray(),
+                    name: post.Name + ".html",
+                    content: post.Render(Converter)
+                );
             }
         }
-
-        private static async Task GeneratePost(Post post) =>
-            await Context
-                .Storage
-                .WriteContent(
-                    folderStack: post,
-                    name: post.Name + ".html",
-                    content: post.Render(RenderedFormats.Html)
-                );
     }
 }             

@@ -11,7 +11,7 @@ namespace fruitfly.core
         public string ReplaceBlock;
 
         internal static Variable CreateFrom(Match match) =>
-            new Variable()
+            new Variable
             {
                 Scope = match.Groups[1].Value,
                 Name = match.Groups[2].Value,

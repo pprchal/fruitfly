@@ -1,6 +1,5 @@
 // Pavel Prchal, 2019
 
-using System.Threading.Tasks;
 using fruitfly.objects;
 
 namespace fruitfly.core
@@ -9,9 +8,9 @@ namespace fruitfly.core
     {
         string LoadTemplate(string templateName);
 
-        Task WriteContent(IStorageContent folderStack, string name, string content);
+        void WriteContent(string[] folderStack, string name, string content);
 
-        string LoadContent(string storageId);
+        string LoadContentByStorageId(string storageId);
 
         Blog Scan(); 
     }

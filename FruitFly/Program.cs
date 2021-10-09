@@ -1,33 +1,26 @@
-﻿// Pavel Prchal, 2019, 2020
+﻿// Pavel Prchal, 2019
 
 using fruitfly.core;
-using fruitfly.objects;
-using System.IO;
-using YamlDotNet.Serialization;
 
 namespace fruitfly
 {
     class Program
     {
-        static void Main(string[] args) =>
-            new Program().Run(args);
-
-        private void Run(string[] args)
+        static int Main(string[] args)
         {
-            if(args.Length == 0)
+            var console = new Console() as IConsole;
+            if(args.Length != 0)
             {
-                Context.Config = LoadYamlConfig();
-                BlogGenerator.GenerateBlog();
+                console.WriteLine("~o~ did you expect death-star? ~o~");
+                return 0;
             }
-            else
-            {
-                Context.ConsoleWrite("~o~ did you expect death-star? ~o~");
-            }
-        }
 
-        private Configuration LoadYamlConfig() =>
-            new DeserializerBuilder()
-                .Build()
-                .Deserialize<Configuration>(File.OpenText(Constants.Config.FileName));
+            (new BlogGenerator(
+                storage: new FileStorage(console),
+                console: console,
+                converter: new MarkdigHtmlConverter()
+            ) as IBlogGenerator).GenerateBlog(args);
+            return 0;
+        }
     }
 }
