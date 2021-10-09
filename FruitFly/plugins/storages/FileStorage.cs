@@ -19,7 +19,24 @@ namespace fruitfly.core
         }
 
         string IStorage.LoadTemplate(string templateName) =>
-            File.ReadAllText(GetFullTemplateName(templateName));
+            ReadContent(GetFullTemplateName(templateName));
+
+        string IStorage.LoadContentByStorageId(string storagePath) =>
+            ReadContent(storagePath);
+
+
+        string ReadContent(string storagePath)
+        {
+            Console.WriteLine($"R< {storagePath}");
+            return File.ReadAllText(storagePath);
+        }
+
+        void IStorage.WriteContent(string[] folderStack, string name, string content) 
+        {
+            var fullFileName = CreateFullPath(folderStack, name);
+            Console.WriteLine($"W> {fullFileName}");
+            File.WriteAllText(fullFileName, content);
+        }
 
         string TEMPLATES_ROOT =>
             Path.Combine(Context.Config.templateDir, Constants.Templates.FOLDER);
@@ -32,26 +49,32 @@ namespace fruitfly.core
         string GetFullTemplateName(string templateName) =>
             Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
 
-        void IStorage.WriteContent(string[] folderStack, string name, string content) =>
-            File.WriteAllText(
-                CreateFullPath(folderStack, name),
-                content
-            );
+
 
         Blog IStorage.Scan() => Scan(BLOG_INPUT_ROOT);
 
+        static readonly Regex YEAR = new Regex("y(\\d+)");
         Blog Scan(string rootDir) 
         {
             var blog = new Blog(this);
 
-            var candidateDirs = new DirectoryInfo(rootDir).EnumerateDirectories(                
-                searchPattern: "*",
-                new EnumerationOptions{ RecurseSubdirectories = true }
-            );
+            blog.Posts = new DirectoryInfo(rootDir)
+                .EnumerateFiles("*.md", new EnumerationOptions{ RecurseSubdirectories = true})
+                .Select(fileInfo => (FileInfo: fileInfo, M: DirectoryRe.Match(fileInfo.DirectoryName)))
+                .Where(t => t.M.Success)
+                .Select(t => new Post(blog, this)
+                {
+                    Name = t.FileInfo.Name,
+                    Title = t.FileInfo.Name.Substring(0, t.FileInfo.Name.Length - ".md".Length),
+                    StorageId = t.FileInfo.FullName,
+                    Created = new DateTime(
+                        Convert.ToInt32(t.M.Groups[1].Value), 
+                        Convert.ToInt32(t.M.Groups[2].Value), 
+                        Convert.ToInt32(t.M.Groups[3].Value)
+                    ),
+                    Number = Convert.ToInt32(t.M.Groups[4].Value)
+                });
 
-            blog.Posts = candidateDirs
-                .Select(candidateDir => TryParsePost(blog, candidateDir.FullName))
-                .Where(post => post != null);
             return blog;
         }
 
@@ -70,45 +93,12 @@ namespace fruitfly.core
             return Path.Combine(outDirName, $"{name}");
         }
 
-        string IStorage.LoadContentByStorageId(string storageId) =>
-            File.ReadAllText(storageId);
+
 
         // static readonly Regex DirectoryRe =
         //     new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
 
         static readonly Regex DirectoryRe =
             new Regex(@"y(\d+)\/m(\d+)\/d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled);
-            
-
-        Post TryParsePost(Blog blog, string candidateDir)
-        {
-            var m = DirectoryRe.Match(candidateDir);
-            if(!m.Success)
-            {
-                return null;
-            }
-
-            Console.WriteLine($"\t~o~ {candidateDir}");
-            return new DirectoryInfo(candidateDir)
-                .EnumerateFiles()
-                .Where(fi => IsContentFile(fi))
-                .Select(fileInfo => 
-                    new Post(blog, this)
-                    {
-                        Name = fileInfo.Name,
-                        Title = fileInfo.Name.Substring(0, fileInfo.Name.Length - ".md".Length),
-                        StorageId = fileInfo.FullName,
-                        Created = new DateTime(
-                            Convert.ToInt32(m.Groups[1].Value), 
-                            Convert.ToInt32(m.Groups[2].Value), 
-                            Convert.ToInt32(m.Groups[3].Value)
-                        ),
-                        Number = Convert.ToInt32(m.Groups[4].Value)
-                    })
-                .FirstOrDefault();
-        }     
-
-        static bool IsContentFile(FileInfo fileInfo) =>
-            fileInfo.FullName.EndsWith(".md");
     }
 }
