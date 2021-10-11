@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using fruitfly.core;
 
 namespace fruitfly.objects
@@ -47,21 +48,22 @@ namespace fruitfly.objects
             set;
         }
 
-        public string Content =>
-            Storage.LoadContentByStorageId(StorageId);
+        public async Task<string> GetContent() =>
+            await Storage.LoadContentByStorageId(StorageId);
+
 
         IConverter Converter;
-        public override string Render(IConverter converter, string morph = null) 
+        public override async Task<string> Render(IConverter converter, string morph = null) 
         {
             Converter = converter;
             return morph == Constants.MORPH_TILE
             ?
-                new VariableBinder().Bind(
-                    content: Storage.LoadTemplate(Constants.Templates.POST_TILE),
+                await new VariableBinder().Bind(
+                    content: await Storage.LoadTemplate(Constants.Templates.POST_TILE),
                     variableSource: this
-                ).ToString()
+                )
             :
-            base.Render(converter, morph);
+            await base.Render(converter, morph);
         }
         
         public override IList<string> BuildStoragePath() =>
@@ -82,18 +84,18 @@ namespace fruitfly.objects
             }
         }
         
-        public override string GetVariableValue(Variable variable) => variable switch
+        public override async Task<string> GetVariableValue(Variable variable) => variable switch
         {
             { Scope: "post", Name: Constants.Variables.POST_TITLE }  => Title,
             { Scope: "post", Name: Constants.Variables.POST_TITLE_TILE }  => TitleTile,
             { Scope: "post", Name: Constants.Variables.POST_CREATED }  => ToLocaleDate(Created),
             { Scope: "post", Name: Constants.Variables.POST_URL } => Url,
-            { Scope: "post", Name: Constants.Variables.POST_CONTENT }  => Converter.Convert(Content),
-            _ => Parent.GetVariableValue(variable)
+            { Scope: "post", Name: Constants.Variables.POST_CONTENT }  => Converter.Convert(await GetContent()),
+            _ => await Parent.GetVariableValue(variable)
         };
 
         CultureInfo Culture =>
-            new CultureInfo(Context.Config.language.Replace("_", "-"));
+            new(Context.Config.language.Replace("_", "-"));
 
         string ToLocaleDate(DateTime date) =>
             date.ToString("d", Culture);

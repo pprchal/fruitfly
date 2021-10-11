@@ -1,9 +1,9 @@
 // Pavel Prchal, 2019
 
-using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using fruitfly.core;
+using System.Threading.Tasks;
 
 namespace fruitfly.objects
 {
@@ -14,10 +14,10 @@ namespace fruitfly.objects
         {
         }
 
-        public override string Render(IConverter converter, string morph = null) 
+        public override async Task<string> Render(IConverter converter, string morph = null) 
         {
             Converter = converter;
-            return base.Render(converter, morph);
+            return await base.Render(converter, morph);
         }
 
         public override string TemplateName => 
@@ -29,7 +29,7 @@ namespace fruitfly.objects
             set;
         }
 
-        public override string GetVariableValue(Variable variable)
+        public override Task<string> GetVariableValue(Variable variable)
         {
             if(variable.Scope == Constants.Scope.BLOG && 
                variable.Name == Constants.Variables.INDEX_POSTS)
@@ -45,19 +45,19 @@ namespace fruitfly.objects
             return base.GetVariableValue(variable);
         }
 
-        string RenderPostTiles() =>
-            Posts.Aggregate(
-                seed: new StringBuilder(),
-                func: (sb, post) =>
-                {
-                    sb.Append(
-                        post.Render(
-                            converter: Converter, 
-                            morph: Constants.MORPH_TILE
-                        )
-                    );
-                    return sb;
-                }
-            ).ToString();
+        async Task<string> RenderPostTiles()
+        {
+            var sb = new StringBuilder();
+            foreach (var post in Posts)
+            {
+                var tile = await post.Render(
+                    converter: Converter,
+                    morph: Constants.MORPH_TILE
+                );
+
+                sb.Append(tile);
+            }
+            return sb.ToString();
+        }
     }
 }

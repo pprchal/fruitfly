@@ -6,7 +6,7 @@ namespace fruitfly
 {
     public class MarkdigHtmlConverter : IConverter
     {
-        private MarkdownPipeline pipeline = null;
+        readonly MarkdownPipeline pipeline = null;
 
         public MarkdigHtmlConverter()
         {

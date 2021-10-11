@@ -8,7 +8,7 @@ language: cs_CZ
 title: blog - Pavel Prchal
 
 # optional - otherwise is templateDir taken from program directory
-templateDir: /home/pavels/testblog/blog_input
+# templateDir: /home/johndoe/templates
 
 # look for [blog_input] here and write to [blog_output]
 workDir: /home/pavels/testblog
