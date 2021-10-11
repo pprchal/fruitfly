@@ -72,6 +72,6 @@ namespace fruitfly.objects
             throw new System.Exception($"Unknown variable: [{variable.ReplaceBlock}] for template: [{TemplateName}]");
         }
 
-        public virtual IList<string> BuildStoragePath() => new List<string>();
+        public virtual string[] BuildStoragePath() => new string[] {};
     }
 }

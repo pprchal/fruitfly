@@ -31,7 +31,7 @@ namespace fruitfly.core
 
         async Task GenerateBlogIndexFile(Blog blog) =>
             await Storage.WriteContent(
-                folderStack: blog.BuildStoragePath().ToArray(),
+                folderStack: blog.BuildStoragePath(),
                 name: Constants.Templates.INDEX, 
                 content: await blog.Render(Converter)
             );
@@ -40,10 +40,11 @@ namespace fruitfly.core
         {
             foreach(var post in blog.Posts)
             {
+                var postContent = await post.Render(Converter);
                 await Storage.WriteContent(
-                    folderStack: post.BuildStoragePath().ToArray(),
+                    folderStack: post.BuildStoragePath(),
                     name: post.Name + ".html",
-                    content: await post.Render(Converter)
+                    content: postContent
                 );
             }
         }

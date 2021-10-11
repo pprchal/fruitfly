@@ -1,6 +1,7 @@
 // Pavel Prchal, 2019
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -66,31 +67,27 @@ namespace fruitfly.objects
             await base.Render(converter, morph);
         }
         
-        public override IList<string> BuildStoragePath() =>
-            new List<string>
+        public override string[] BuildStoragePath() =>
+            new string[]
             {
                 $"y{Created.Year}",
                 $"m{Created.Month}",
                 $"d{Created.Day}_post{Number}"
             };
 
-        public string Url 
-        { 
-            get
-            {
-                var storagePath = BuildStoragePath();
-                storagePath.Add(Name + ".html");
-                return string.Join("\\", storagePath);
-            }
-        }
+        public string Url  => string.Join(
+            separator: "\\",
+            values: BuildStoragePath().Concat(new string[] { Name + ".html"})
+        );
+            
         
         public override async Task<string> GetVariableValue(Variable variable) => variable switch
         {
-            { Scope: "post", Name: Constants.Variables.POST_TITLE }  => Title,
-            { Scope: "post", Name: Constants.Variables.POST_TITLE_TILE }  => TitleTile,
-            { Scope: "post", Name: Constants.Variables.POST_CREATED }  => ToLocaleDate(Created),
-            { Scope: "post", Name: Constants.Variables.POST_URL } => Url,
-            { Scope: "post", Name: Constants.Variables.POST_CONTENT }  => Converter.Convert(await GetContent()),
+            { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_TITLE }  => Title,
+            { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_TITLE_TILE }  => TitleTile,
+            { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_CREATED }  => ToLocaleDate(Created),
+            { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_URL } => Url,
+            { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_CONTENT }  => Converter.Convert(await GetContent()),
             _ => await Parent.GetVariableValue(variable)
         };
 

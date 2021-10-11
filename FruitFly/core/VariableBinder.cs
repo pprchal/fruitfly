@@ -15,11 +15,15 @@ namespace fruitfly.core
         public async Task<string> Bind(string content, IVariableSource variableSource)
         {
             var sb = new StringBuilder(content);
-            foreach (var variable in FindVariablesInContent(content))
+            var variables = FindVariablesInContent(content);
+            var n = variables.Count();
+
+            foreach (var variable in variables)
             {
+                var val = await variableSource.GetVariableValue(variable);
                 sb.Replace(
                     variable.ReplaceBlock,
-                    await variableSource.GetVariableValue(variable)
+                    val
                 );
             }
             return sb.ToString();
