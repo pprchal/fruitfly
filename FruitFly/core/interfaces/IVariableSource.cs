@@ -1,9 +1,11 @@
 // Pavel Prchal, 2019
 
+using System.Threading.Tasks;
+
 namespace fruitfly.core
 {
     public interface IVariableSource
     {
-        string GetVariableValue(Variable variable);
+        Task<string> GetVariableValue(Variable variable);
     }
 }

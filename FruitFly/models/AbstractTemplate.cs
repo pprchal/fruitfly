@@ -1,13 +1,15 @@
 // Pavel Prchal, 2019
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using fruitfly.core;
 
 namespace fruitfly.objects
 {
     public abstract class AbstractTemplate : IVariableSource
     {
-        protected IStorage Storage;
+        IConverter Converter;  // injected by method, not constructor!
+        protected readonly IStorage Storage;
 
         public AbstractTemplate(AbstractTemplate parent, IStorage storage)
         {
@@ -21,15 +23,14 @@ namespace fruitfly.objects
             Storage = storage;
         }
 
-        IConverter Converter;
-        public virtual string Render(IConverter converter, string morph = null) 
+        public virtual async Task<string> Render(IConverter converter, string morph = null) 
         {
             Converter = converter;
-            return new VariableBinder()
+            return await new VariableBinder()
                 .Bind(
-                    content: Storage.LoadTemplate(TemplateName),
+                    content: await Storage.LoadTemplate(TemplateName),
                     variableSource: this
-                ).ToString();
+                );
         }
         
         public abstract string TemplateName { get; }
@@ -44,14 +45,13 @@ namespace fruitfly.objects
             get;
         }
 
-        IVariableSource ConfigVariableSource =>
-            Context.Config as IVariableSource;
+        static IVariableSource ConfigVariableSource => Context.Config;
 
-        public virtual string GetVariableValue(Variable variable)
+        public virtual async Task<string> GetVariableValue(Variable variable)
         {
             if(variable.Scope == Constants.Scope.CONFIG)
             {
-                return ConfigVariableSource.GetVariableValue(variable);
+                return await ConfigVariableSource.GetVariableValue(variable);
             }
             else if(variable.Scope == Constants.Scope.TEMPLATE)
             {
@@ -61,17 +61,17 @@ namespace fruitfly.objects
                     storage: Storage
                 );
                 ChildParts.Add(nestedTemplate);
-                return nestedTemplate.Render(Converter);  
+                return await nestedTemplate.Render(Converter);  
             }
 
             if(Parent != null)
             {
-                return Parent.GetVariableValue(variable);
+                return await Parent.GetVariableValue(variable);
             }
 
             throw new System.Exception($"Unknown variable: [{variable.ReplaceBlock}] for template: [{TemplateName}]");
         }
 
-        public virtual IList<string> BuildStoragePath() => new List<string>();
+        public virtual string[] BuildStoragePath() => new string[] {};
     }
 }

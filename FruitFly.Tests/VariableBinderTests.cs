@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using fruitfly.core;
+using System.Threading.Tasks;
 
 namespace FruitFly.Tests
 {
@@ -11,27 +12,29 @@ namespace FruitFly.Tests
         [TestCase("a b c", ExpectedResult = "a b c")]
         [TestCase("{scope:var1}{scope:var1}{scope:var1}", ExpectedResult = "aaa")]
         [TestCase("{template:menu.html}{scope:var1}{scope:var1}", ExpectedResult = "MENUaa")]
-        public string IsBasicReplacementWorking(string content)
+        public string IsReplacementWorking(string content)
         {
-            return new VariableBinder().Bind(
+            var result =  new VariableBinder().Bind(
                 content,
                 this
-            ).ToString();
+            );
+
+            return result.Result;
         }
 
-        string IVariableSource.GetVariableValue(Variable variable)
+        Task<string> IVariableSource.GetVariableValue(Variable variable)
         {
             if (variable.Scope == "template" && variable.Name == "menu.html")
             {
-                return "MENU";
+                return Task.FromResult("MENU");
             }
             else if (variable.Scope == "scope" && variable.Name == "var1")
             {
-                return "a";
+                return Task.FromResult("a");
             }
             else if (variable.Scope == "scope2" && variable.Name == "myvar")
             {
-                return "b";
+                return Task.FromResult("b");
             }
 
             throw new System.NotImplementedException(variable.ReplaceBlock);

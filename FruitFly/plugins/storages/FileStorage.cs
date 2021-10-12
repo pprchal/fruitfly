@@ -5,41 +5,40 @@ using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
 using fruitfly.objects;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace fruitfly.core
 {
     // Filesystem storage
     public class FileStorage : IStorage
     {
-        IConsole Console;
+        readonly IConsole Console;
 
         public FileStorage(IConsole console)
         {
             Console = console;
         }
 
-        string IStorage.LoadTemplate(string templateName) =>
-            ReadContent(GetFullTemplateName(templateName));
+        async Task<string> IStorage.LoadTemplate(string templateName) =>
+            await ReadContentAsync(GetFullTemplateName(templateName));
 
-        string IStorage.LoadContentByStorageId(string storagePath) =>
-            ReadContent(storagePath);
+        async Task<string> IStorage.LoadContentByStorageId(string storagePath) =>
+            await ReadContentAsync(storagePath);
 
 
-        string ReadContent(string storagePath)
+        Task<string> ReadContentAsync(string storagePath)
         {
-            Console.WriteLine($"R< {storagePath}");
-            return File.ReadAllText(storagePath);
+            Console.WriteLine($"R {storagePath}");
+            return File.ReadAllTextAsync(storagePath);
         }
 
-        void IStorage.WriteContent(string[] folderStack, string name, string content) 
+        Task IStorage.WriteContent(string[] folderStack, string name, string content) 
         {
             var fullFileName = CreateFullPath(folderStack, name);
-            Console.WriteLine($"W> {fullFileName}");
-            File.WriteAllText(fullFileName, content);
+            Console.WriteLine($"W {fullFileName}");
+            return File.WriteAllTextAsync(fullFileName, content);
         }
-
-        string TEMPLATES_ROOT =>
-            Path.Combine(Context.Config.templateDir, Constants.Templates.FOLDER);
 
         string BLOG_INPUT_ROOT =>
             Path.Combine(Context.Config.workDir, Constants.BLOG_INPUT);
@@ -47,13 +46,15 @@ namespace fruitfly.core
         string BLOG_OUTPUT_ROOT => Context.Config.workDir;
 
         string GetFullTemplateName(string templateName) =>
-            Path.Combine(TEMPLATES_ROOT, Context.Config.template, templateName);
+            Path.Combine(
+                Context.Config.templateDir, 
+                Context.Config.template, 
+                templateName
+            );
 
+        Task<Blog> IStorage.Scan() =>
+            Task.Run(() => Scan(BLOG_INPUT_ROOT));
 
-
-        Blog IStorage.Scan() => Scan(BLOG_INPUT_ROOT);
-
-        static readonly Regex YEAR = new Regex("y(\\d+)");
         Blog Scan(string rootDir) 
         {
             var blog = new Blog(this);
@@ -93,12 +94,10 @@ namespace fruitfly.core
             return Path.Combine(outDirName, $"{name}");
         }
 
-
-
-        // static readonly Regex DirectoryRe =
-        //     new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
-
-        static readonly Regex DirectoryRe =
+        static readonly Regex DirectoryRe =         
+            System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
+            new Regex(@"y(\d+)\\m(\d+)\\d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled)
+            :
             new Regex(@"y(\d+)\/m(\d+)\/d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled);
     }
 }
