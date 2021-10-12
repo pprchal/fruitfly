@@ -96,7 +96,8 @@ namespace fruitfly.core
 
         static readonly Regex DirectoryRe =         
             System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            new Regex(@"y(\d+)\/m(\d+)\/d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled) :
-            new Regex("y(\\d+)\\\\m(\\d+)\\\\d([\\d+]+)_post([\\d+]+$)", RegexOptions.Compiled);
+            new Regex(@"y(\d+)\\m(\d+)\\d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled)
+            :
+            new Regex(@"y(\d+)\/m(\d+)\/d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled);
     }
 }

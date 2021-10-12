@@ -25,7 +25,7 @@ namespace fruitfly
                     storage: new FileStorage(console),
                     console: console,
                     converter: new MarkdigHtmlConverter()
-                ) as IBlogGenerator).GenerateBlogAsync().Result;
+                )).GenerateBlogAsync().Result;
 
                 var seconds = new TimeSpan(DateTime.Now.Ticks - startTime.Ticks).TotalSeconds;
                 console.WriteLine($"{blog.Posts.Count()} generated at: ${seconds} second(s)");

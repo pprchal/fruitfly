@@ -1,12 +1,11 @@
 // Pavel Prchal, 2019
 
-using System.Linq;
 using System.Threading.Tasks;
 using fruitfly.objects;
 
 namespace fruitfly.core
 {
-    public class BlogGenerator : IBlogGenerator
+    public class BlogGenerator 
     {
         readonly IStorage Storage;
         readonly IConsole Console;
@@ -19,7 +18,7 @@ namespace fruitfly.core
             Converter = converter;
         }
 
-        Task<Blog> IBlogGenerator.GenerateBlogAsync() =>
+        public Task<Blog> GenerateBlogAsync() =>
             Task.Run(async () =>
             {
                 Console.WriteLine($"~o~ FRUITFLY {Context.Config.fullVersion} Blog generator");
