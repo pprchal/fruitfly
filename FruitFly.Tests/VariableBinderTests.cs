@@ -12,7 +12,7 @@ namespace FruitFly.Tests
         [TestCase("a b c", ExpectedResult = "a b c")]
         [TestCase("{scope:var1}{scope:var1}{scope:var1}", ExpectedResult = "aaa")]
         [TestCase("{template:menu.html}{scope:var1}{scope:var1}", ExpectedResult = "MENUaa")]
-        public string IsBasicReplacementWorking(string content)
+        public string IsReplacementWorking(string content)
         {
             var result =  new VariableBinder().Bind(
                 content,

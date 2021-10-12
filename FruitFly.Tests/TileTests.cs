@@ -8,14 +8,13 @@ namespace FruitFly.Tests
     public class TileTests
     {
         [Test]
-        public void T(string content)
+        public void IsTileRenderingOK()
         {
             var storage = new FileStorage(new fruitfly.Console()) as IStorage;
             var result = new Post(
                 null, 
                 storage
-            ).Render(null, Constants.MORPH_TILE);
+            ).Render(null, Constants.MORPH_TILE).Result;
         }
-
     }
 }

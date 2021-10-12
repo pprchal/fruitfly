@@ -57,6 +57,7 @@ namespace fruitfly.objects
 
                 sb.Append(tile);
             }
+
             return sb.ToString();
         }
     }
