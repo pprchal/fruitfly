@@ -6,11 +6,11 @@ namespace fruitfly
 {
     public class MarkdigHtmlConverter : IConverter
     {
-        readonly MarkdownPipeline pipeline = null;
+        readonly MarkdownPipeline Pipeline;
 
         public MarkdigHtmlConverter()
         {
-            pipeline = new MarkdownPipelineBuilder()
+            Pipeline = new MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
                 .UseAutoLinks()
                 .UseDiagrams()
@@ -18,10 +18,11 @@ namespace fruitfly
                 .UseGlobalization()
                 .UseMediaLinks()
                 .UseBootstrap()
+                .UseFooters()
                 .Build();
         }
 
         string IConverter.Convert(string mdContent) =>
-            Markdown.ToHtml(mdContent, pipeline);
+            Markdown.ToHtml(mdContent, Pipeline);
     }
 }
