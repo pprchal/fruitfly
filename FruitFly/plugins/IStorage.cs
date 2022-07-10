@@ -1,17 +1,18 @@
 // Pavel Prchal, 2019
 
+using System.Threading.Tasks;
 using fruitfly.objects;
 
 namespace fruitfly.core
 {
     public interface IStorage
     {
-        string LoadTemplate(string templateName);
+        Task<string> LoadTemplate(string templateName);
 
-        void WriteContent(string[] folderStack, string name, string content);
+        Task<string> LoadContentByStorageId(string storageId);
 
-        string LoadContentByStorageId(string storageId);
+        Task WriteContent(string[] folderStack, string name, string content);
 
-        Blog Scan(); 
+        Task<Blog> Scan(); 
     }
 }

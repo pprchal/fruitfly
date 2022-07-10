@@ -27,6 +27,8 @@ namespace fruitfly.core
             public const string TEMPLATE = "template";
 
             public const string BLOG = "blog";
+
+            public const string POST = "post";
         }
 
         // blog:posts

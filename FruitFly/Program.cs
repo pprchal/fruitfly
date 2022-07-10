@@ -1,6 +1,8 @@
 ﻿// Pavel Prchal, 2019
 
 using fruitfly.core;
+using System;
+using System.Linq;
 
 namespace fruitfly
 {
@@ -8,19 +10,32 @@ namespace fruitfly
     {
         static int Main(string[] args)
         {
+            var startTime = DateTime.Now;
+
             var console = new Console() as IConsole;
             if(args.Length != 0)
             {
-                console.WriteLine("~o~ did you expect death-star? ~o~");
+                console.WriteLine("did you expect death-star?");
                 return 0;
             }
 
-            (new BlogGenerator(
-                storage: new FileStorage(console),
-                console: console,
-                converter: new MarkdigHtmlConverter()
-            ) as IBlogGenerator).GenerateBlog(args);
-            return 0;
+            try
+            {
+                var blog = (new BlogGenerator(
+                    storage: new FileStorage(console),
+                    console: console,
+                    converter: new MarkdigHtmlConverter()
+                )).GenerateBlogAsync().Result;
+
+                var seconds = new TimeSpan(DateTime.Now.Ticks - startTime.Ticks).TotalSeconds;
+                console.WriteLine($"{blog.Posts.Count()} generated at: ${seconds} second(s)");
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                console.WriteLine($"Error: {ex}");
+                return 1;
+            }
         }
     }
 }
