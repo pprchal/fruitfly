@@ -10,8 +10,11 @@ namespace fruitfly.objects
 {
     public class Post : AbstractTemplate
     {
-        public Post(AbstractTemplate parent, IStorage storage) : base(parent, storage)
+        readonly IConfiguration Configuration;
+
+        public Post(IConfiguration configuration, AbstractTemplate parent, IStorage storage) : base(parent, storage)
         {
+            Configuration = configuration;
         }
 
         public override string TemplateName => Constants.Templates.POST;
@@ -91,7 +94,7 @@ namespace fruitfly.objects
         };
 
         CultureInfo Culture =>
-            new(Context.Config.language.Replace("_", "-"));
+            new(Configuration.language.Replace("_", "-"));
 
         string ToLocaleDate(DateTime date) =>
             date.ToString("d", Culture);

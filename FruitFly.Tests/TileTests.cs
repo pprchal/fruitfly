@@ -10,8 +10,11 @@ namespace FruitFly.Tests
         [Test]
         public void IsTileRenderingOK()
         {
-            var storage = new FileStorage(new fruitfly.Console()) as IStorage;
+            var config = new Configuration();
+
+            var storage = new FileStorage(config, new fruitfly.Console()) as IStorage;
             var result = new Post(
+                config,
                 null, 
                 storage
             ).Render(null, Constants.MORPH_TILE).Result;

@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using fruitfly.core;
+using fruitfly.objects;
 
 namespace FruitFly.Tests
 {
@@ -9,9 +10,11 @@ namespace FruitFly.Tests
         [Test]
         public void SmokeTest(string content)
         {
-            var storage = new FileStorage(new fruitfly.Console()) as IStorage;
+            var storage = new FileStorage(
+                new Configuration(),
+                new fruitfly.Console()
+            ) as IStorage;
             var blog = storage.Scan();
         }
-
     }
 }

@@ -14,10 +14,12 @@ namespace fruitfly.core
     public class FileStorage : IStorage
     {
         readonly IConsole Console;
+        readonly IConfiguration Configuration;
 
-        public FileStorage(IConsole console)
+        public FileStorage(IConfiguration configuration, IConsole console)
         {
             Console = console;
+            Configuration = configuration;
         }
 
         async Task<string> IStorage.LoadTemplate(string templateName) =>
@@ -41,14 +43,14 @@ namespace fruitfly.core
         }
 
         string BLOG_INPUT_ROOT =>
-            Path.Combine(Context.Config.workDir, Constants.BLOG_INPUT);
+            Path.Combine(Configuration.workDir, Constants.BLOG_INPUT);
 
-        string BLOG_OUTPUT_ROOT => Context.Config.workDir;
+        string BLOG_OUTPUT_ROOT => Configuration.workDir;
 
         string GetFullTemplateName(string templateName) =>
             Path.Combine(
-                Context.Config.templateDir, 
-                Context.Config.template, 
+                Configuration.templateDir, 
+                Configuration.template, 
                 templateName
             );
 
@@ -63,7 +65,7 @@ namespace fruitfly.core
                 .EnumerateFiles("*.md", new EnumerationOptions{ RecurseSubdirectories = true})
                 .Select(fileInfo => (FileInfo: fileInfo, M: DirectoryRe.Match(fileInfo.DirectoryName)))
                 .Where(t => t.M.Success)
-                .Select(t => new Post(blog, this)
+                .Select(t => new Post(Configuration, blog, this)
                 {
                     Name = t.FileInfo.Name,
                     Title = t.FileInfo.Name.Substring(0, t.FileInfo.Name.Length - ".md".Length),

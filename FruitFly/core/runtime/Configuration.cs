@@ -8,7 +8,7 @@ using YamlDotNet.Serialization;
 
 namespace fruitfly.objects
 {
-    public class Configuration : IVariableSource
+    public class Configuration : IConfiguration, IVariableSource
     {
         public Configuration()
         {
@@ -26,7 +26,7 @@ namespace fruitfly.objects
 
         dynamic YamlConfig;
                 
-        public string templateDir
+        string IConfiguration.templateDir
         {
             get
             {
@@ -37,15 +37,16 @@ namespace fruitfly.objects
                 catch
                 {
                 }
-                return Path.Combine(workDir, Constants.Templates.FOLDER);
+                return Path.Combine(YamlConfig.workDir, Constants.Templates.FOLDER);
             }
         }
-        public string workDir => YamlConfig.workDir;
-        public string language => YamlConfig.language;
-        public string home => YamlConfig.home;
-        public string title => YamlConfig.title;
-        public string template => YamlConfig.template;
-        public string fullVersion => "6.0";
+
+        string IConfiguration.workDir => YamlConfig.workDir;
+        string IConfiguration.language => YamlConfig.language;
+        string IConfiguration.home => YamlConfig.home;
+        string IConfiguration.title => YamlConfig.title;
+        string IConfiguration.template => YamlConfig.template;
+        string IConfiguration.fullVersion => "6.0";
 
         Task<string> IVariableSource.GetVariableValue(Variable variable) =>
             Task.FromResult(

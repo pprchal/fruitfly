@@ -10,18 +10,20 @@ namespace fruitfly.core
         readonly IStorage Storage;
         readonly IConsole Console;
         readonly IConverter Converter;
+        readonly IConfiguration Configuration;
 
-        public BlogGenerator(IStorage storage, IConsole console, IConverter converter)
+        public BlogGenerator(IConfiguration configuration, IStorage storage, IConsole console, IConverter converter)
         {
             Storage = storage; 
             Console = console;
             Converter = converter;
+            Configuration = configuration;
         }
 
         public Task<Blog> GenerateBlogAsync() =>
             Task.Run(async () =>
             {
-                Console.WriteLine($"~o~ FRUITFLY {Context.Config.fullVersion} Blog generator");
+                Console.WriteLine($"~o~ FRUITFLY {Configuration.fullVersion} Blog generator");
                 var blog = await Storage.Scan();
                 await GenerateBlogPostsFiles(blog);
                 await GenerateBlogIndexFile(blog);

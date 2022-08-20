@@ -1,6 +1,7 @@
 ﻿// Pavel Prchal, 2019
 
 using fruitfly.core;
+using fruitfly.objects;
 using System;
 using System.Linq;
 
@@ -12,6 +13,7 @@ namespace fruitfly
         {
             var startTime = DateTime.Now;
 
+            
             var console = new Console() as IConsole;
             if(args.Length != 0)
             {
@@ -19,10 +21,13 @@ namespace fruitfly
                 return 0;
             }
 
+            var config = new Configuration();
+
             try
             {
                 var blog = (new BlogGenerator(
-                    storage: new FileStorage(console),
+                    configuration: config,
+                    storage: new FileStorage(config, console),
                     console: console,
                     converter: new MarkdigHtmlConverter()
                 )).GenerateBlogAsync().Result;
