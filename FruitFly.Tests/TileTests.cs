@@ -12,8 +12,9 @@ namespace FruitFly.Tests
         {
             var config = new Configuration();
 
-            var storage = new FileStorage(config, new fruitfly.Console()) as IStorage;
+            var storage = new FileStorage(config, config, new fruitfly.Console()) as IStorage;
             var result = new Post(
+                config,
                 config,
                 null, 
                 storage

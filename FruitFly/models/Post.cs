@@ -12,7 +12,8 @@ namespace fruitfly.objects
     {
         readonly IConfiguration Configuration;
 
-        public Post(IConfiguration configuration, AbstractTemplate parent, IStorage storage) : base(parent, storage)
+        public Post(IConfiguration configuration, IVariableSource configSource, AbstractTemplate parent, IStorage storage) 
+        : base(configSource, parent, storage)
         {
             Configuration = configuration;
         }

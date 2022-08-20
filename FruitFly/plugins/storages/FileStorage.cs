@@ -15,8 +15,9 @@ namespace fruitfly.core
     {
         readonly IConsole Console;
         readonly IConfiguration Configuration;
+        readonly IVariableSource ConfigSource;
 
-        public FileStorage(IConfiguration configuration, IConsole console)
+        public FileStorage(IVariableSource configSource, Configuration configuration, IConsole console)
         {
             Console = console;
             Configuration = configuration;
@@ -65,7 +66,7 @@ namespace fruitfly.core
                 .EnumerateFiles("*.md", new EnumerationOptions{ RecurseSubdirectories = true})
                 .Select(fileInfo => (FileInfo: fileInfo, M: DirectoryRe.Match(fileInfo.DirectoryName)))
                 .Where(t => t.M.Success)
-                .Select(t => new Post(Configuration, blog, this)
+                .Select(t => new Post(Configuration, ConfigSource, blog, this)
                 {
                     Name = t.FileInfo.Name,
                     Title = t.FileInfo.Name.Substring(0, t.FileInfo.Name.Length - ".md".Length),

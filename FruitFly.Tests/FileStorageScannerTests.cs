@@ -10,9 +10,11 @@ namespace FruitFly.Tests
         [Test]
         public void SmokeTest(string content)
         {
+            var config = new Configuration();
             var storage = new FileStorage(
-                new Configuration(),
-                new fruitfly.Console()
+                configSource: config,
+                configuration: config,
+                console: new fruitfly.Console()
             ) as IStorage;
             var blog = storage.Scan();
         }

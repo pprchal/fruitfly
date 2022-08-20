@@ -8,7 +8,7 @@ namespace fruitfly.objects
     {
         private readonly string _TemplateName;
 
-        public Template(AbstractTemplate parent, string templateName, IStorage storage) : base(parent, storage)
+        public Template(AbstractTemplate parent, string templateName, IVariableSource configSource, IStorage storage) : base(configSource, parent, storage)
         {
             _TemplateName = templateName;
         }

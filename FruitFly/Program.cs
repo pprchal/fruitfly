@@ -27,7 +27,11 @@ namespace fruitfly
             {
                 var blog = (new BlogGenerator(
                     configuration: config,
-                    storage: new FileStorage(config, console),
+                    storage: new FileStorage(
+                        config,
+                        config,
+                        console
+                    ),
                     console: console,
                     converter: new MarkdigHtmlConverter()
                 )).GenerateBlogAsync().Result;

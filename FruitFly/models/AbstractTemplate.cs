@@ -11,8 +11,11 @@ namespace fruitfly.objects
         IConverter Converter;  // injected by method, not constructor!
         protected readonly IStorage Storage;
 
-        public AbstractTemplate(AbstractTemplate parent, IStorage storage)
+        readonly IVariableSource ConfigSource;
+
+        public AbstractTemplate(IVariableSource configSource, AbstractTemplate parent, IStorage storage)
         {
+            ConfigSource = configSource;
             Parent = parent;
             Storage = storage;
         }
@@ -45,19 +48,18 @@ namespace fruitfly.objects
             get;
         }
 
-        static IVariableSource ConfigVariableSource => Context.Config;
-
         public virtual async Task<string> GetVariableValue(Variable variable)
         {
             if(variable.Scope == Constants.Scope.CONFIG)
             {
-                return await ConfigVariableSource.GetVariableValue(variable);
+                return await ConfigSource.GetVariableValue(variable);
             }
             else if(variable.Scope == Constants.Scope.TEMPLATE)
             {
                 var nestedTemplate = new Template(
                     parent: this, 
                     templateName: variable.Name,
+                    configSource: ConfigSource,
                     storage: Storage
                 );
                 ChildParts.Add(nestedTemplate);
