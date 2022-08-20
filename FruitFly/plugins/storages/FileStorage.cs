@@ -61,6 +61,7 @@ namespace fruitfly.core
         Blog Scan(string rootDir) 
         {
             var blog = new Blog(this);
+            Console.WriteLine($"Scanning: {rootDir}");
 
             blog.Posts = new DirectoryInfo(rootDir)
                 .EnumerateFiles("*.md", new EnumerationOptions{ RecurseSubdirectories = true})
