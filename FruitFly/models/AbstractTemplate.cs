@@ -1,77 +1,64 @@
-// Pavel Prchal, 2019
+// Pavel Prchal, 2019, 2023
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using fruitfly.core;
 
-namespace fruitfly.objects
+namespace fruitfly
 {
     public abstract class AbstractTemplate : IVariableSource
     {
-        IConverter Converter;  // injected by method, not constructor!
-        protected readonly IStorage Storage;
+        protected IStorage Storage => Runtime.Get<IStorage>();
+        IVariableSource ConfigSource => Runtime.Get<IVariableSource>();
 
-        readonly IVariableSource ConfigSource;
-
-        public AbstractTemplate(IVariableSource configSource, AbstractTemplate parent, IStorage storage)
+        public AbstractTemplate(AbstractTemplate parent)
         {
-            ConfigSource = configSource;
             Parent = parent;
-            Storage = storage;
         }
 
-        public AbstractTemplate(IStorage storage)
+        public AbstractTemplate()
         {
             Parent = null;
-            Storage = storage;
         }
 
-        public virtual async Task<string> Render(IConverter converter, string morph = null) 
-        {
-            Converter = converter;
-            return await new VariableBinder()
+        public virtual async Task<string> Render(string morph = null) =>
+            await new VariableBinder()
                 .Bind(
                     content: await Storage.LoadTemplate(TemplateName),
                     variableSource: this
                 );
-        }
         
         public abstract string TemplateName { get; }
         
-        public IList<AbstractTemplate> ChildParts
-        {
-            get;
-        } = new List<AbstractTemplate>();
+        readonly IList<AbstractTemplate> ChildParts = new List<AbstractTemplate>();
 
-        public AbstractTemplate Parent
+        protected AbstractTemplate Parent
         {
             get;
+            private set;
         }
 
         public virtual async Task<string> GetVariableValue(Variable variable)
         {
-            if(variable.Scope == Constants.Scope.CONFIG)
+            switch (variable.Scope)
             {
-                return await ConfigSource.GetVariableValue(variable);
-            }
-            else if(variable.Scope == Constants.Scope.TEMPLATE)
-            {
-                var nestedTemplate = new Template(
-                    parent: this, 
-                    templateName: variable.Name,
-                    configSource: ConfigSource,
-                    storage: Storage
-                );
-                ChildParts.Add(nestedTemplate);
-                return await nestedTemplate.Render(Converter);  
+                case Constants.Scope.CONFIG:
+                    return await ConfigSource.GetVariableValue(variable);
+
+                case Constants.Scope.TEMPLATE:
+                    var nestedTemplate = new Template(
+                        parent: this,
+                        templateName: variable.Name
+                    );
+                    ChildParts.Add(nestedTemplate);
+                    return await nestedTemplate.Render();
             }
 
-            if(Parent != null)
+            if (Parent != null)
             {
                 return await Parent.GetVariableValue(variable);
             }
 
-            throw new System.Exception($"Unknown variable: [{variable.ReplaceBlock}] for template: [{TemplateName}]");
+            return $"Unknown variable: [{variable}] for template-{GetType().Name}: [{TemplateName}]";
         }
 
         public virtual string[] BuildStoragePath() => new string[] {};

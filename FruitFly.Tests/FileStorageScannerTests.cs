@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
-using fruitfly.core;
-using fruitfly.objects;
+using fruitfly;
 
 namespace FruitFly.Tests
 {
@@ -10,13 +9,14 @@ namespace FruitFly.Tests
         [Test]
         public void SmokeTest(string content)
         {
-            var config = new Configuration();
-            var storage = new FileStorage(
-                configSource: config,
-                configuration: config,
-                console: new fruitfly.Console()
-            ) as IStorage;
+            var storage = new fruitfly.plugins.FileStorage() as IStorage;
             var blog = storage.Scan();
+        }
+
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            fruitfly.Runtime.Add<IConfiguration>(new Configuration());
         }
     }
 }

@@ -1,24 +1,33 @@
 ﻿using NUnit.Framework;
-using fruitfly.core;
-using fruitfly.objects;
+using fruitfly;
+using fruitfly.plugins;
+using System.Threading.Tasks;
 
 namespace FruitFly.Tests
 {
     [TestFixture]
-    public class TileTests
+    public class TileTests : IVariableSource
     {
         [Test]
         public void IsTileRenderingOK()
         {
-            var config = new Configuration();
+            var post = new Post(null);
+            var result = post.Render(Constants.MORPH_TILE).Result;
+        }
 
-            var storage = new FileStorage(config, config, new fruitfly.Console()) as IStorage;
-            var result = new Post(
-                config,
-                config,
-                null, 
-                storage
-            ).Render(null, Constants.MORPH_TILE).Result;
+        [OneTimeSetUp]
+        public void SetUp()
+        {
+            Runtime.Add<IConsole>(new Console());
+            Runtime.Add<IConfiguration>(new Configuration());
+            Runtime.Add<IVariableSource>(this);
+            Runtime.Add<IConverter>(new MarkdigHtmlConverter());
+            Runtime.Add<IStorage>(new FileStorage());
+        }
+
+        Task<string> IVariableSource.GetVariableValue(Variable variable)
+        {
+            return Task.FromResult("");
         }
     }
 }

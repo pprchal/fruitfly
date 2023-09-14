@@ -2,20 +2,28 @@
 
 using System.Text.RegularExpressions;
 
-namespace fruitfly.core
+namespace fruitfly
 {
-    public class Variable
+    public sealed class Variable
     {
-        public string Name;
-        public string Scope;
-        public string ReplaceBlock;
+        Variable(string name, string scope, string replaceBlock)
+        {
+            Name = name;
+            Scope = scope;
+            ReplaceBlock = replaceBlock;
+        }
+
+        public readonly string Name;
+        public readonly string Scope;
+        public readonly string ReplaceBlock;
+
+        public override string ToString() => $"[{Scope}::{Name}]";
 
         internal static Variable CreateFrom(Match match) =>
-            new Variable
-            {
-                Scope = match.Groups[1].Value,
-                Name = match.Groups[2].Value,
-                ReplaceBlock = match.Groups[0].Value
-            };
+            new(
+                name: match.Groups[2].Value,
+                scope: match.Groups[1].Value,
+                replaceBlock: match.Groups[0].Value
+            );
     }
 }

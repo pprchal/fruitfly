@@ -1,18 +1,17 @@
 // Pavel Prchal, 2019
 
-using fruitfly.core;
-
-namespace fruitfly.objects
+namespace fruitfly
 {
     public class Template : AbstractTemplate
     {
-        private readonly string _TemplateName;
-
-        public Template(AbstractTemplate parent, string templateName, IVariableSource configSource, IStorage storage) : base(configSource, parent, storage)
+        public Template(AbstractTemplate parent, string templateName) : base(parent)
         {
-            _TemplateName = templateName;
+            TemplateName = templateName;
         }
 
-        public override string TemplateName => _TemplateName;
+        public override string TemplateName
+        {
+            get;
+        }
     }
 }

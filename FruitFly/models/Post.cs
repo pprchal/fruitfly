@@ -1,74 +1,58 @@
-// Pavel Prchal, 2019
+// Pavel Prchal, 2019, 2023
 
 using System;
 using System.Linq;
 using System.Globalization;
 using System.Threading.Tasks;
-using fruitfly.core;
 
-namespace fruitfly.objects
+namespace fruitfly
 {
     public class Post : AbstractTemplate
     {
-        readonly IConfiguration Configuration;
+        readonly IConfiguration Configuration = Runtime.Get<IConfiguration>();
+        readonly IConverter Converter = Runtime.Get<IConverter>();
 
-        public Post(IConfiguration configuration, IVariableSource configSource, AbstractTemplate parent, IStorage storage) 
-        : base(configSource, parent, storage)
+        public Post(
+            string name,
+            string title,
+            string storageId,
+            DateTime created,
+            int number
+        ) : base()
         {
-            Configuration = configuration;
+            Name = name;
+            Title = title;
+            StorageId = storageId;
+            Created = created;
+            Number = number;
         }
 
         public override string TemplateName => Constants.Templates.POST;
         
-        public string Name
-        {
-            get;
-            set;
-        }
+        public readonly string Name;
 
-        public string Title
-        {
-            get;
-            set;
-        }
+        public readonly string Title;
 
         public string TitleTile => Title;
 
-        public DateTime Created
-        {
-            get;
-            set;
-        }
+        public readonly DateTime Created;
 
-        public string StorageId
-        {
-            get;
-            set;
-        }
+        public readonly string StorageId;
 
-        public int Number
-        {
-            get;
-            set;
-        }
+        public readonly int Number;
 
         public async Task<string> GetContent() =>
             await Storage.LoadContentByStorageId(StorageId);
 
-
-        IConverter Converter;
-        public override async Task<string> Render(IConverter converter, string morph = null) 
-        {
-            Converter = converter;
-            return morph == Constants.MORPH_TILE
+        public override async Task<string> Render(string morph = null) =>
+            morph == Constants.MORPH_TILE
             ?
                 await new VariableBinder().Bind(
                     content: await Storage.LoadTemplate(Constants.Templates.POST_TILE),
                     variableSource: this
                 )
             :
-            await base.Render(converter, morph);
-        }
+            await base.Render(morph);
         
         public override string[] BuildStoragePath() =>
             new string[]
@@ -82,7 +66,6 @@ namespace fruitfly.objects
             separator: "\\",
             values: BuildStoragePath().Concat(new string[] { Name + ".html"})
         );
-            
         
         public override async Task<string> GetVariableValue(Variable variable) => variable switch
         {
@@ -99,5 +82,10 @@ namespace fruitfly.objects
 
         string ToLocaleDate(DateTime date) =>
             date.ToString("d", Culture);
+
+        internal void SetParent(Blog blog)
+        {
+            Parent = blog;
+        }
     }
 }

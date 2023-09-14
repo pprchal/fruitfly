@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace fruitfly.core
+namespace fruitfly
 {
     public class VariableBinder 
     {
@@ -30,6 +30,6 @@ namespace fruitfly.core
         IEnumerable<Variable> FindVariablesInContent(string content) =>
             VariableRegex
                 .Matches(content)
-                .Select(match => Variable.CreateFrom(match));
+                .Select(Variable.CreateFrom);
     }
 }

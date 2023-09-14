@@ -1,14 +1,14 @@
 // Pavel Prchal, 2019
 
-namespace fruitfly.core
+namespace fruitfly
 {
-    public class Constants
+    public static class Constants
     {
         public const string BLOG_INPUT = "blog_input";
         public const string MORPH_TILE = "tile";
         public const string VAR_NAME_CONTENT = "content";
 
-        public class Templates
+        public static class Templates
         {
             public const string FOLDER = "templates";
             public const string INDEX = "index.html";
@@ -20,7 +20,7 @@ namespace fruitfly.core
             public const string YML = "config.yml";
         }        
 
-        public class Scope
+        public static class Scope
         {
             public const string CONFIG = "config";
 
@@ -32,7 +32,7 @@ namespace fruitfly.core
         }
 
         // blog:posts
-        public class Variables
+        public static class Variables
         {
             public const string INDEX_POSTS = "posts";
             public const string POST_TITLE = "title";

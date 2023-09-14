@@ -12,10 +12,10 @@ Basics:
 
 ```
 PS C:\FruitFly> dotnet run
-~o~ FRUITFLY 1.0 Blog generator
-        ~o~ c:\myblog\blog_input\y2019\m11\d15_post1
-        ~o~ c:\myblog\blog_input\y2019\m11\d30_post1
-2 ~o~ generated at: $0,7855702 second(s)
+FRUITFLY 6.0 Blog generator
+        c:\myblog\blog_input\y2019\m11\d15_post1
+        c:\myblog\blog_input\y2019\m11\d30_post1
+2 generated at: $0,7855702 second(s)
 ```
 
 pretty simple, huh?

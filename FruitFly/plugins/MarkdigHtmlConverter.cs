@@ -2,7 +2,7 @@
 
 using Markdig;
 
-namespace fruitfly
+namespace fruitfly.plugins
 {
     public class MarkdigHtmlConverter : IConverter
     {

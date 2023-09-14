@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/fruitfly.csproj",
+                "${workspaceFolder}/FruitFly.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/fruitfly.csproj",
+                "${workspaceFolder}/FruitFly.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,9 +32,8 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/fruitfly.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "--project",
+                "${workspaceFolder}/FruitFly.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

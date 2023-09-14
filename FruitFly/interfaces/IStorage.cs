@@ -1,9 +1,8 @@
 // Pavel Prchal, 2019
 
 using System.Threading.Tasks;
-using fruitfly.objects;
 
-namespace fruitfly.core
+namespace fruitfly
 {
     public interface IStorage
     {
@@ -13,6 +12,6 @@ namespace fruitfly.core
 
         Task WriteContent(string[] folderStack, string name, string content);
 
-        Task<Blog> Scan(); 
+        Task<Blog> LoadBlog(); 
     }
 }

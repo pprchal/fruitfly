@@ -2,7 +2,7 @@
 
 using System.Threading.Tasks;
 
-namespace fruitfly.core
+namespace fruitfly
 {
     public interface IVariableSource
     {

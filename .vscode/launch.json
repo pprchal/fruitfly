@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/FruitFly/bin/Debug/netcoreapp6.0/FruitFly.dll",
+            "program": "${workspaceFolder}/FruitFly/bin/Debug/netcoreapp7.0/FruitFly.dll",
             "args": [],
             "cwd": "${workspaceFolder}/FruitFly",
             "console": "internalConsole",

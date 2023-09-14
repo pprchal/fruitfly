@@ -1,33 +1,22 @@
-// Pavel Prchal, 2019
+// Pavel Prchal, 2019, 2023
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using fruitfly.core;
 using System.Threading.Tasks;
 
-namespace fruitfly.objects
+namespace fruitfly
 {
     public class Blog : AbstractTemplate
     {
-        IConverter Converter;
-        public Blog(IStorage storage) : base(storage)
-        {
-        }
 
-        public override async Task<string> Render(IConverter converter, string morph = null) 
-        {
-            Converter = converter;
-            return await base.Render(converter, morph);
-        }
+        public override async Task<string> Render(string morph = null) =>
+            await base.Render(morph);
 
         public override string TemplateName => 
             Constants.Templates.INDEX;
 
-        public IEnumerable<Post> Posts
-        {
-            get;
-            set;
-        }
+        public readonly IList<Post> Posts = new List<Post>();
 
         public override Task<string> GetVariableValue(Variable variable)
         {
@@ -47,18 +36,31 @@ namespace fruitfly.objects
 
         async Task<string> RenderPostTiles()
         {
-            var sb = new StringBuilder();
-            foreach (var post in Posts)
-            {
-                var tile = await post.Render(
-                    converter: Converter,
-                    morph: Constants.MORPH_TILE
-                );
+            // var sb = new StringBuilder();
+            // foreach (var post in Posts)
+            // {
+            //     var tile = await post.Render(Constants.MORPH_TILE);
+            //     sb.Append(tile);
+            // }
 
-                sb.Append(tile);
-            }
 
-            return sb.ToString();
+            var pr = Posts.Select(async post => await post.Render(Constants.MORPH_TILE));
+            var x = await Task.WhenAll(pr);
+
+            return string.Join(" ", x);
+
+            // return sb.ToString();
+        }
+
+        internal static Blog Error(string msg)
+        {
+            return new Blog();
+        }
+
+        internal void AddPost(Post post)
+        {
+            Posts.Add(post);
+            post.SetParent(this);
         }
     }
 }

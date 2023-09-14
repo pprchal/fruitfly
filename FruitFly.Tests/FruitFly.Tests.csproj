@@ -1,19 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp6.0</TargetFramework>
+    <TargetFramework>netcoreapp7.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <!--<snippetPackages>-->
   <ItemGroup>
-    <PackageReference Include="nunit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+    <PackageReference Include="nunit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
   <!--</snippetPackages>-->
 
   <ItemGroup>
-    <ProjectReference Include="..\FruitFly\FruitFly.csproj" />
+    <ProjectReference Include="../FruitFly/FruitFly.csproj" />
   </ItemGroup>
 </Project>

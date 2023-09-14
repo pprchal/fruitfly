@@ -11,5 +11,5 @@ title: blog - Pavel Prchal
 # templateDir: /home/johndoe/templates
 
 # look for [blog_input] here and write to [blog_output]
-workDir: /home/pavels/testblog
+workDir: /home/pavels/blog
 

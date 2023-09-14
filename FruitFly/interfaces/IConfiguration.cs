@@ -1,6 +1,6 @@
 // Pavel Prchal, 2019
 
-namespace fruitfly.objects
+namespace fruitfly
 {
     public interface IConfiguration
     {
