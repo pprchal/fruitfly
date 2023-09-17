@@ -2,6 +2,7 @@
 using fruitfly;
 using fruitfly.plugins;
 using System.Threading.Tasks;
+using System;
 
 namespace FruitFly.Tests
 {
@@ -11,15 +12,21 @@ namespace FruitFly.Tests
         [Test]
         public void IsTileRenderingOK()
         {
-            var post = new Post(null);
+            var post = new Post(
+                name: "My POST",
+                title: "ěščř",
+                storageId: "",
+                created: DateTime.Now,
+                number: 1
+            );
             var result = post.Render(Constants.MORPH_TILE).Result;
         }
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            Runtime.Add<IConsole>(new Console());
-            Runtime.Add<IConfiguration>(new Configuration());
+            Runtime.Add<IConsole>(new fruitfly.Console());
+            Runtime.Add<IConfiguration>(new YamlConfiguration());
             Runtime.Add<IVariableSource>(this);
             Runtime.Add<IConverter>(new MarkdigHtmlConverter());
             Runtime.Add<IStorage>(new FileStorage());

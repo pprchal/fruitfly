@@ -10,13 +10,13 @@ namespace FruitFly.Tests
         public void SmokeTest(string content)
         {
             var storage = new fruitfly.plugins.FileStorage() as IStorage;
-            var blog = storage.Scan();
+            var blog = storage.LoadBlog();
         }
 
         [OneTimeSetUp]
         public void SetUp()
         {
-            fruitfly.Runtime.Add<IConfiguration>(new Configuration());
+            fruitfly.Runtime.Add<IConfiguration>(new YamlConfiguration());
         }
     }
 }

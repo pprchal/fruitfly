@@ -34,7 +34,7 @@ namespace fruitfly
         protected AbstractTemplate Parent
         {
             get;
-            private set;
+            set;
         }
 
         public virtual async Task<string> GetVariableValue(Variable variable)
