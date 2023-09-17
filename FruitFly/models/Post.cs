@@ -83,9 +83,9 @@ namespace fruitfly
         string ToLocaleDate(DateTime date) =>
             date.ToString("d", Culture);
 
-        internal void SetParent(Blog blog)
+        internal void SetParent(IVariableSource parent)
         {
-            Parent = blog;
+            Parent = parent;
         }
     }
 }

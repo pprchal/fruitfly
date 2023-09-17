@@ -10,7 +10,7 @@ namespace fruitfly
         protected IStorage Storage => Runtime.Get<IStorage>();
         IVariableSource ConfigSource => Runtime.Get<IVariableSource>();
 
-        public AbstractTemplate(AbstractTemplate parent)
+        public AbstractTemplate(IVariableSource parent)
         {
             Parent = parent;
         }
