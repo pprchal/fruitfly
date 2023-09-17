@@ -36,20 +36,8 @@ namespace fruitfly
 
         async Task<string> RenderPostTiles()
         {
-            // var sb = new StringBuilder();
-            // foreach (var post in Posts)
-            // {
-            //     var tile = await post.Render(Constants.MORPH_TILE);
-            //     sb.Append(tile);
-            // }
-
-
-            var pr = Posts.Select(async post => await post.Render(Constants.MORPH_TILE));
-            var x = await Task.WhenAll(pr);
-
-            return string.Join(" ", x);
-
-            // return sb.ToString();
+            var renderTasks = Posts.Select(async post => await post.Render(Constants.MORPH_TILE));
+            return string.Join(" ", await Task.WhenAll(renderTasks));
         }
 
         internal static Blog Error(string msg)
