@@ -31,7 +31,7 @@ namespace fruitfly
         
         readonly IList<AbstractTemplate> ChildParts = new List<AbstractTemplate>();
 
-        protected AbstractTemplate Parent
+        protected IVariableSource Parent
         {
             get;
             set;
