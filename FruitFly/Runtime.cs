@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace fruitfly
 {
-    public sealed class Runtime
+    public static class Runtime
     {
-        static public readonly DateTime StartTime = DateTime.Now;
+        public static readonly DateTime StartTime = DateTime.Now;
 
         private static readonly Dictionary<Type, object> _Services = new();
 
@@ -21,7 +21,7 @@ namespace fruitfly
             Add<IConverter>(new plugins.MarkdigHtmlConverter());
         }
 
-        public static void Add<T>(object service) where T : class =>
+        static void Add<T>(object service) where T : class =>
             _Services.Add(typeof(T), service);
 
         public static T Get<T>() where T : class =>
