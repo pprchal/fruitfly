@@ -10,8 +10,6 @@ namespace fruitfly
 {
     public class VariableBinder 
     {
-        static readonly Regex VariableRegex = new("\\{([\\w\\d]+):([\\w\\.\\d]+)\\}", RegexOptions.Compiled);
-
         public async Task<string> Bind(string content, IVariableSource variableSource)
         {
             var sb = new StringBuilder(content);
@@ -28,7 +26,7 @@ namespace fruitfly
 
 
         IEnumerable<Variable> FindVariablesInContent(string content) =>
-            VariableRegex
+            RExps.VARIABLE
                 .Matches(content)
                 .Select(Variable.CreateFrom);
     }

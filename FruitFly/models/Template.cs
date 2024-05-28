@@ -2,16 +2,11 @@
 
 namespace fruitfly
 {
-    public class Template : AbstractTemplate
+    public class Template(AbstractTemplate parent, string templateName) : AbstractTemplate(parent)
     {
-        public Template(AbstractTemplate parent, string templateName) : base(parent)
-        {
-            TemplateName = templateName;
-        }
-
         public override string TemplateName
         {
             get;
-        }
+        } = templateName;
     }
 }

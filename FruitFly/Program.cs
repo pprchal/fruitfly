@@ -11,23 +11,18 @@ if(args.Length != 0)
 }
         
 Runtime.CreateAndRegister();
-return await RunAsync();
-
-static async Task<int> RunAsync()
-{
-    var console = Runtime.Get<IConsole>();
+var console = Runtime.Get<IConsole>();
             
-    try
-    {
-        var blog = await new BlogGenerator().GenerateBlogAsync();
-        var seconds = new TimeSpan(DateTime.Now.Ticks - Runtime.StartTime.Ticks).TotalSeconds;
-        console.WriteLine($"{blog.Posts.Count} generated at: ${seconds} second(s)");
-        return 0;
-    }
-    catch (Exception ex)
-    {
-        console.WriteLine($"Error: {ex}");
-        return 1;
-    }
+try
+{
+    var blog = await new BlogGenerator().GenerateBlogAsync();
+    var seconds = new TimeSpan(DateTime.Now.Ticks - Runtime.StartTime.Ticks).TotalSeconds;
+    console.WriteLine($"{blog.Posts.Count} generated at: {seconds} second(s)");
+    return 0;
+}
+catch (Exception ex)
+{
+    console.WriteLine($"Error: {ex}");
+    return 1;
 }
 

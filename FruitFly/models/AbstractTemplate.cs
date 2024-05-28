@@ -29,7 +29,7 @@ namespace fruitfly
         
         public abstract string TemplateName { get; }
         
-        readonly IList<AbstractTemplate> ChildParts = new List<AbstractTemplate>();
+        readonly IList<AbstractTemplate> ChildParts = [];
 
         protected IVariableSource Parent
         {
@@ -61,6 +61,6 @@ namespace fruitfly
             return $"Unknown variable: [{variable}] for template-{GetType().Name}: [{TemplateName}]";
         }
 
-        public virtual string[] BuildStoragePath() => new string[] {};
+        public virtual string[] BuildStoragePath() => [];
     }
 }

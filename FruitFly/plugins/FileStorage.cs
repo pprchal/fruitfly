@@ -114,8 +114,8 @@ namespace fruitfly.plugins
 
         static readonly Regex DirectoryRe =         
             System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-            new Regex(@"y(\d+)\\m(\d+)\\d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled)
+            RExps.DIRECTORY_WIN
             :
-            new Regex(@"y(\d+)\/m(\d+)\/d([\d+]+)_post([\d+]+$)", RegexOptions.Compiled);
+            RExps.DIRECTORY_UNIX;
     }
 }

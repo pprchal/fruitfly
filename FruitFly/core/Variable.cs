@@ -4,18 +4,11 @@ using System.Text.RegularExpressions;
 
 namespace fruitfly
 {
-    public sealed class Variable
+    public readonly struct Variable(string name, string scope, string replaceBlock)
     {
-        Variable(string name, string scope, string replaceBlock)
-        {
-            Name = name;
-            Scope = scope;
-            ReplaceBlock = replaceBlock;
-        }
-
-        public readonly string Name;
-        public readonly string Scope;
-        public readonly string ReplaceBlock;
+        public readonly string Name = name;
+        public readonly string Scope = scope;
+        public readonly string ReplaceBlock = replaceBlock;
 
         public override string ToString() => $"[{Scope}::{Name}]";
 
