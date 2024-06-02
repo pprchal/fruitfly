@@ -25,11 +25,7 @@ namespace FruitFly.Tests
         [OneTimeSetUp]
         public void SetUp()
         {
-            Runtime.Add<IConsole>(new fruitfly.Console());
-            Runtime.Add<IConfiguration>(new YamlConfiguration());
-            Runtime.Add<IVariableSource>(this);
-            Runtime.Add<IConverter>(new MarkdigHtmlConverter());
-            Runtime.Add<IStorage>(new FileStorage());
+            Runtime.Start();
         }
 
         Task<string> IVariableSource.GetVariableValue(Variable variable)

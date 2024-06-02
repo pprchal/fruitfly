@@ -20,7 +20,7 @@ namespace fruitfly
         public virtual async Task<string> Render(string morph = null) =>
             await new VariableBinder()
                 .Bind(
-                    content: await Runtime.Storage.LoadTemplate(TemplateName),
+                    content: await FileStorage.LoadTemplate(TemplateName),
                     variableSource: this
                 );
         

@@ -10,7 +10,7 @@ using YamlDotNet.Serialization;
 
 namespace fruitfly
 {
-    public class YamlConfiguration : IConfiguration, IVariableSource
+    public class YamlConfiguration : IVariableSource
     {
         public YamlConfiguration()
         {
@@ -28,7 +28,7 @@ namespace fruitfly
 
         readonly dynamic YamlConfig;
                 
-        string IConfiguration.templateDir
+        public string templateDir
         {
             get
             {
@@ -43,12 +43,12 @@ namespace fruitfly
             }
         }
 
-        string IConfiguration.workDir => YamlConfig.workDir;
-        string IConfiguration.language => YamlConfig.language;
-        string IConfiguration.home => YamlConfig.home;
-        string IConfiguration.title => YamlConfig.title;
-        string IConfiguration.template => YamlConfig.template;
-        string IConfiguration.fullVersion => "6.0";
+        public string workDir => YamlConfig.workDir;
+        public string language => YamlConfig.language;
+        public string home => YamlConfig.home;
+        public string title => YamlConfig.title;
+        public string template => YamlConfig.template;
+        public string fullVersion => "6.0";
 
         Task<string> IVariableSource.GetVariableValue(Variable variable)
         {
@@ -67,8 +67,8 @@ namespace fruitfly
             {
                 // fruitfly.objects.IConfiguration.get_language
                 var mi = GetType()
-                    .GetInterfaceMap(typeof(IConfiguration))
-                    .TargetMethods
+                    // .GetInterfaceMap(typeof(IConfiguration))
+                    .GetMethods()
                     .FirstOrDefault(m => m.Name.EndsWith("_" + variable.Name));
                 return (string)mi.Invoke(this, null);
             }

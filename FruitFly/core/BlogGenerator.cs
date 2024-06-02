@@ -6,32 +6,29 @@ namespace fruitfly
 {
     public class BlogGenerator 
     {
-        public async Task<Blog> GenerateBlogAsync()
+        public static async Task<bool> GenerateBlogAsync()
         {
-            Runtime.Console.WriteLine($"FRUITFLY {Runtime.Configuration.fullVersion} Blog generator");
-            var blog = await Runtime.Storage.LoadBlog();
-
-            var blogs = await GeneratePosts(blog);
-            Runtime.Console.WriteLine($"Generated posts: {blogs}");
-
-            await GenerateIndexHtml(blog);
-            return blog;
+            Runtime.WriteLine($"FRUITFLY {Runtime.Configuration.fullVersion} blog generator");
+            var blog = await FileStorage.LoadBlog();
+            var posts = await GeneratePosts(blog);
+            Runtime.WriteLine($"Generated posts: {posts}");
+            return await GenerateIndexHtml(blog);
         }
 
-        async Task<bool> GenerateIndexHtml(Blog blog) =>
-            await Runtime.Storage.WriteContent(
+        static async Task<bool> GenerateIndexHtml(Blog blog) =>
+            await FileStorage.WriteContent(
                 folderStack: blog.BuildStoragePath(),
                 name: Constants.Templates.INDEX, 
                 content: await blog.Render()
             );
 
-        async Task<int> GeneratePosts(Blog blog) 
+        static async Task<int> GeneratePosts(Blog blog) 
         {
             var n = 0;
             foreach(var post in blog.Posts)
             {
                 var postContent = await post.Render();
-                var saved = await Runtime.Storage.WriteContent(
+                var saved = await FileStorage.WriteContent(
                     folderStack: post.BuildStoragePath(),
                     name: $"{post.Name}.html",
                     content: postContent

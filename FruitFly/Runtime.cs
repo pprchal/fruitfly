@@ -9,13 +9,9 @@ namespace fruitfly
     {
         public static readonly DateTime StartTime = DateTime.Now;
 
-        public static IConsole Console
-        {
-            get;
-            private set;
-        }
+        public static void WriteLine(string msg) => System.Console.WriteLine($"{msg}");
 
-        public static IConfiguration Configuration
+        public static YamlConfiguration Configuration
         {
             get;
             private set;
@@ -27,26 +23,17 @@ namespace fruitfly
             private set;
         }
 
-        public static IStorage Storage
-        {
-            get;
-            private set;
-        }
-
         public static IConverter Converter
         {
             get;
             private set;
         }
 
-        internal static void Start()
+        public static void Start()
         {
-            Console = new Console();
-
             var yamlConfig = new YamlConfiguration();
             Configuration = yamlConfig;
             VariableSource = yamlConfig;
-            Storage = new plugins.FileStorage();
             Converter = new plugins.MarkdigHtmlConverter();
         }
     }

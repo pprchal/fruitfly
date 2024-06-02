@@ -30,13 +30,13 @@ namespace fruitfly
         public readonly int Number = number;
 
         public async Task<string> GetContent() =>
-            await Runtime.Storage.LoadContentByStorageId(StorageId);
+            await FileStorage.LoadContentByStorageId(StorageId);
 
         public override async Task<string> Render(string morph = null) =>
             morph == Constants.MORPH_TILE
             ?
                 await new VariableBinder().Bind(
-                    content: await Runtime.Storage.LoadTemplate(Constants.Templates.POST_TILE),
+                    content: await FileStorage.LoadTemplate(Constants.Templates.POST_TILE),
                     variableSource: this
                 )
             :

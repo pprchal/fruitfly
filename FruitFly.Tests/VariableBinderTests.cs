@@ -22,7 +22,6 @@ namespace FruitFly.Tests
             return result.Result;
         }
 
-        // Task<string> IVariableSource.GetVariableValue(Variable variable)
         Task<string> IVariableSource.GetVariableValue(Variable variable)
         {
             if (variable.Scope == "template" && variable.Name == "menu.html")

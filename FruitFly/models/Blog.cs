@@ -39,11 +39,6 @@ namespace fruitfly
             return string.Join(" ", await Task.WhenAll(renderTasks));
         }
 
-        internal static Blog Error(string msg)
-        {
-            return new Blog();
-        }
-
         internal void AddPost(Post post)
         {
             Posts.Add(post);
