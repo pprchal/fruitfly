@@ -7,64 +7,51 @@ using System.Threading.Tasks;
 
 namespace fruitfly
 {
-    public class Post : AbstractTemplate
+    public class Post(
+        string name,
+        string title,
+        string storageId,
+        DateTime created,
+        int number
+        ) : AbstractTemplate()
     {
-        readonly IConfiguration Configuration = Runtime.Get<IConfiguration>();
-        readonly IConverter Converter = Runtime.Get<IConverter>();
-
-        public Post(
-            string name,
-            string title,
-            string storageId,
-            DateTime created,
-            int number
-        ) : base()
-        {
-            Name = name;
-            Title = title;
-            StorageId = storageId;
-            Created = created;
-            Number = number;
-        }
-
         public override string TemplateName => Constants.Templates.POST;
         
-        public readonly string Name;
+        public readonly string Name = name;
 
-        public readonly string Title;
+        public readonly string Title = title;
 
         public string TitleTile => Title;
 
-        public readonly DateTime Created;
+        public readonly DateTime Created = created;
 
-        public readonly string StorageId;
+        public readonly string StorageId = storageId;
 
-        public readonly int Number;
+        public readonly int Number = number;
 
         public async Task<string> GetContent() =>
-            await Storage.LoadContentByStorageId(StorageId);
+            await Runtime.Storage.LoadContentByStorageId(StorageId);
 
         public override async Task<string> Render(string morph = null) =>
             morph == Constants.MORPH_TILE
             ?
                 await new VariableBinder().Bind(
-                    content: await Storage.LoadTemplate(Constants.Templates.POST_TILE),
+                    content: await Runtime.Storage.LoadTemplate(Constants.Templates.POST_TILE),
                     variableSource: this
                 )
             :
             await base.Render(morph);
         
         public override string[] BuildStoragePath() =>
-            new string[]
-            {
+            [
                 $"y{Created.Year}",
                 $"m{Created.Month}",
                 $"d{Created.Day}_post{Number}"
-            };
+            ];
 
         public string Url  => string.Join(
             separator: "\\",
-            values: BuildStoragePath().Concat(new string[] { Name + ".html"})
+            values: BuildStoragePath().Concat([Name + ".html"])
         );
         
         public override async Task<string> GetVariableValue(Variable variable) => variable switch
@@ -73,12 +60,12 @@ namespace fruitfly
             { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_TITLE_TILE }  => TitleTile,
             { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_CREATED }  => ToLocaleDate(Created),
             { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_URL } => Url,
-            { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_CONTENT }  => Converter.Convert(await GetContent()),
+            { Scope: Constants.Scope.POST, Name: Constants.Variables.POST_CONTENT }  => Runtime.Converter.Convert(await GetContent()),
             _ => await Parent.GetVariableValue(variable)
         };
 
         CultureInfo Culture =>
-            new(Configuration.language.Replace("_", "-"));
+            new(Runtime.Configuration.language.Replace("_", "-"));
 
         string ToLocaleDate(DateTime date) =>
             date.ToString("d", Culture);

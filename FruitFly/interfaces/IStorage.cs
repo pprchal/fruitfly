@@ -10,7 +10,7 @@ namespace fruitfly
 
         Task<string> LoadContentByStorageId(string storageId);
 
-        Task WriteContent(string[] folderStack, string name, string content);
+        Task<bool> WriteContent(string[] folderStack, string name, string content);
 
         Task<Blog> LoadBlog(); 
     }

@@ -9,22 +9,45 @@ namespace fruitfly
     {
         public static readonly DateTime StartTime = DateTime.Now;
 
-        private static readonly Dictionary<Type, object> _Services = new();
-
-        internal static void CreateAndRegister()
+        public static IConsole Console
         {
-            Add<IConsole>(new Console());
-            var configuration = new YamlConfiguration();
-            Add<IConfiguration>(configuration);
-            Add<IVariableSource>(configuration);
-            Add<IStorage>(new plugins.FileStorage());
-            Add<IConverter>(new plugins.MarkdigHtmlConverter());
+            get;
+            private set;
         }
 
-        static void Add<T>(object service) where T : class =>
-            _Services.Add(typeof(T), service);
+        public static IConfiguration Configuration
+        {
+            get;
+            private set;
+        }
 
-        public static T Get<T>() where T : class =>
-            _Services[typeof(T)] as T;
+        public static IVariableSource VariableSource
+        {
+            get;
+            private set;
+        }
+
+        public static IStorage Storage
+        {
+            get;
+            private set;
+        }
+
+        public static IConverter Converter
+        {
+            get;
+            private set;
+        }
+
+        internal static void Start()
+        {
+            Console = new Console();
+
+            var yamlConfig = new YamlConfiguration();
+            Configuration = yamlConfig;
+            VariableSource = yamlConfig;
+            Storage = new plugins.FileStorage();
+            Converter = new plugins.MarkdigHtmlConverter();
+        }
     }
 }

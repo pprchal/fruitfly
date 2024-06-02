@@ -6,36 +6,40 @@ namespace fruitfly
 {
     public class BlogGenerator 
     {
-        IStorage Storage => Runtime.Get<IStorage>();
-        IConfiguration Configuration => Runtime.Get<IConfiguration>();
-
         public async Task<Blog> GenerateBlogAsync()
         {
-            await System.Console.Out.WriteLineAsync($"FRUITFLY {Configuration.fullVersion} Blog generator");
-            var blog = await Storage.LoadBlog();
-            await GenerateBlogPostsFiles(blog);
-            await GenerateBlogIndexFile(blog);
+            Runtime.Console.WriteLine($"FRUITFLY {Runtime.Configuration.fullVersion} Blog generator");
+            var blog = await Runtime.Storage.LoadBlog();
+
+            var blogs = await GeneratePosts(blog);
+            Runtime.Console.WriteLine($"Generated posts: {blogs}");
+
+            await GenerateIndexHtml(blog);
             return blog;
         }
 
-        async Task GenerateBlogIndexFile(Blog blog) =>
-            await Storage.WriteContent(
+        async Task<bool> GenerateIndexHtml(Blog blog) =>
+            await Runtime.Storage.WriteContent(
                 folderStack: blog.BuildStoragePath(),
                 name: Constants.Templates.INDEX, 
                 content: await blog.Render()
             );
 
-        async Task GenerateBlogPostsFiles(Blog blog) 
+        async Task<int> GeneratePosts(Blog blog) 
         {
+            var n = 0;
             foreach(var post in blog.Posts)
             {
                 var postContent = await post.Render();
-                await Storage.WriteContent(
+                var saved = await Runtime.Storage.WriteContent(
                     folderStack: post.BuildStoragePath(),
-                    name: post.Name + ".html",
+                    name: $"{post.Name}.html",
                     content: postContent
                 );
+                n++;
             }
+
+            return n;
         }
     }
 }             

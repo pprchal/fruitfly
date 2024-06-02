@@ -13,9 +13,6 @@ namespace fruitfly.plugins
     // Filesystem storage
     public class FileStorage : IStorage
     {
-        IConsole Console => Runtime.Get<IConsole>();
-        IConfiguration Configuration => Runtime.Get<IConfiguration>();
-
         async Task<string> IStorage.LoadTemplate(string templateName) =>
             await ReadContentAsync(GetFullTemplateName(templateName));
 
@@ -28,19 +25,19 @@ namespace fruitfly.plugins
         Task IStorage.WriteContent(string[] folderStack, string name, string content) 
         {
             var fullFileName = CreateFullPath(folderStack, name);
-            Console.WriteLine($"W {fullFileName}");
+            Runtime.Console.WriteLine($"W {fullFileName}");
             return File.WriteAllTextAsync(fullFileName, content);
         }
 
         string BLOG_INPUT_ROOT =>
-            Path.Combine(Configuration.workDir, Constants.BLOG_INPUT);
+            Path.Combine(Runtime.Configuration.workDir, Constants.BLOG_INPUT);
 
-        string BLOG_OUTPUT_ROOT => Configuration.workDir;
+        string BLOG_OUTPUT_ROOT => Runtime.Configuration.workDir;
 
         string GetFullTemplateName(string templateName) =>
             Path.Combine(
-                Configuration.templateDir, 
-                Configuration.template, 
+                Runtime.Configuration.templateDir, 
+                Runtime.Configuration.template, 
                 templateName
             );
 
@@ -54,7 +51,7 @@ namespace fruitfly.plugins
                 return Blog.Error($"Directory not found: {rootDir}");
             }
 
-            Console.WriteLine($"Scanning: {rootDir}");
+            Runtime.Console.WriteLine($"Scanning: {rootDir}");
             var blog = new Blog();
             foreach(var post in EnumeratePosts())
             {

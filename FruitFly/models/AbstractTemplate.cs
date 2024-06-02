@@ -7,9 +7,6 @@ namespace fruitfly
 {
     public abstract class AbstractTemplate : IVariableSource
     {
-        protected IStorage Storage => Runtime.Get<IStorage>();
-        IVariableSource ConfigSource => Runtime.Get<IVariableSource>();
-
         public AbstractTemplate(IVariableSource parent)
         {
             Parent = parent;
@@ -23,7 +20,7 @@ namespace fruitfly
         public virtual async Task<string> Render(string morph = null) =>
             await new VariableBinder()
                 .Bind(
-                    content: await Storage.LoadTemplate(TemplateName),
+                    content: await Runtime.Storage.LoadTemplate(TemplateName),
                     variableSource: this
                 );
         
@@ -42,7 +39,7 @@ namespace fruitfly
             switch (variable.Scope)
             {
                 case Constants.Scope.CONFIG:
-                    return await ConfigSource.GetVariableValue(variable);
+                    return await Runtime.VariableSource.GetVariableValue(variable);
 
                 case Constants.Scope.TEMPLATE:
                     var nestedTemplate = new Template(
