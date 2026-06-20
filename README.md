@@ -1,4 +1,8 @@
 # FruitFly - really tiny static blog system
+
+> 06-20.2026 - archived. there is no need to html pages. md on github is quite ok.
+
+
 If you're **bored** with gigantic blogging systems.
 ~o~
 Basics: 
